@@ -1,22 +1,33 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
-class Field:
-    def __init__(self, N, dx, wavelength ):
-        self.N = N
-        self.dx = dx
-        self.wavelength = wavelength
+N = 100 
+radius = 0.25 #500 mm across
+dx = (2 * radius)/N
+edge_taper = 0.01 #gaussian
+theta = math.pi / 4 #45 degrees (but in rad)
+lamda = 3e-3 #3mm
+frame_size = [50,50]
 
-        #complex field
-        self.u = np.zeros(shape=(N,N),dtype=complex)
+#tilted mirror matrices
+# phase_gradient = np.zeros((3,1))
+# degree_tilt = np.array([[1,0,0], [0, math.cos(theta), math.sin(theta)], [0, -math.sin(theta), math.cos(theta)]])
+# coord = np.array([[x], [y], [z]])
+# #QUESTION
+mirror_coord = np.array([2,2,4]) #m
 
-        #coordinate grid (assuming equal spacing in x and y)
-        x = (np.arange(N) - N/2) * dx
-        self.X, self.Y = np.meshgrid(x,x)
+# phase_gradient = (degree_tilt * coord) + mirror_coord
+phase_gradient = 1
 
-def aperture(field, radius, edge_taper):
-    r = np.sqrt(field.X**2 + field.Y**2)
-    aperture = np.zeros_like(field.u)
+def aperture(N, dx,radius, edge_taper, phase_gradient):
+    coords = np.linspace(-radius, radius -dx, N)
+    x, y = np.meshgrid(coords, coords)
+    z = 0
+
+    aperture = np.zeros(shape=(N,N), dtype=complex)
+    r = np.sqrt(x**2 + y**2)
+
     #edge taper
     alpha = -np.log(edge_taper)/radius**2
 
@@ -24,104 +35,52 @@ def aperture(field, radius, edge_taper):
     inside = r < radius
     aperture[inside] = np.exp(-alpha * r[inside] ** 2)
 
-    field.u = aperture.astype(complex)
+    return aperture, x, y, z #check output for complex output with xyz values
 
-    return field
+def mirror(N, dx, theta, mirror_coord):
+    length = ((mirror_coord[0]) * 1000)/2 #mm (/2 to account for pos/negative sides)
+    width = ((mirror_coord[1]) * 1000)/2 #mm
+    distance = ((mirror_coord[2]) *1000)  #mm
+    
+    length = np.linspace(-length, length - dx, N)
+    width = np.linspace(-width, width - dx, N)
 
-def fresnel(field, z):
-    k = 2*np.pi / field.wavelength
-    N = field.N
-    dx = field.dx
+    x_grid, y_grid = np.meshgrid(length,width)
 
-    near_field = Field(N,dx, field.wavelength)
+    mirror = [x_grid, y_grid, distance]
+    return mirror, length, width, distance
 
-    for i in range(N):
-        for j in range(N):
 
-            d = np.sqrt((field.X - near_field.X[i,j])**2 + (field.Y - near_field.Y[i,j])**2 + z**2)
+def fresnel(aperture, mirror, lamda):
+    k = 2*np.pi / lamda
+    near_field = np.zeros(shape=(N,N), dtype=complex)
+    # f_length = np.linspace(-frame_size[0]/2, frame_size[0]/2, N)
+    # f_width = np.linspace(-frame_size[1]/2, frame_size[1]/2, N)
+    
+    for i in range(len(length)):
+        for j in range(len(width)):
 
-            near_field.u[i,j] = np.sum(field.u * np.exp(1j * k * d) / d)
+            #2d array of distances
+            d = np.sqrt((mirror[0] - length[i])**2 + (mirror[1] - width[j])**2 + distance**2)
+            near_field[i,j] = np.sum(aperture * np.exp(1j *k * d) /d )
+
     return near_field
 
-def fraunhofer(field):
-
-    center = np.fft.ifftshift(field.u)
-
-    centered = np.fft.fft2(center)
-    centered = np.fft.fftshift(centered)
-
-    #scale for dx (area element)
-    centered *= field.dx**2
-
-    #angular axes (same centered)
-    fx = np.fft.fftshift(np.fft.fftfreq(field.N, d=field.dx)) 
-    fy = np.fft.fftshift(np.fft.fftfreq(field.N, d=field.dx))
-
-    Xf, Yf = np.meshgrid(fx, fy)
-
-    far_field = Field(field.N, field.dx, field.wavelength)
-    far_field.u = centered
-    far_field.X = Xf
-    far_field.Y = Yf
-
-    return far_field
-
-def embed(field, embedded_size):
-    embedded = Field(embedded_size, field.dx, field.wavelength)
-    #centering
-    start = (embedded_size - field.N) // 2
-    end = start + field.N
-    #placing
-    embedded.u[start:end, start:end] = field.u
-
-    return embedded
+#def fraunhofer(a_grid, m_grid, lamda):
 
 
-###
-N = 100
-L = 0.5 #500 mm across
-dx = L/N
-wavelength = 3e-3 #3mm
-###
-
-field = Field(N, dx, wavelength)
-# plt.imshow(field.X)
-# plt.colorbar()
+aperture, x, y, z = aperture(N, dx,radius, edge_taper, phase_gradient)
+# plt.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
+# plt.xlabel("Diameter of Aperture (mm)")
+# plt.title("Aperture")
 # plt.show()
 
-#aperture with 250 mm radius
-field = aperture(field, radius=0.25, edge_taper=.01)
-# plt.imshow(np.abs(field.u))
-# plt.colorbar()
-# plt.show()
+mirror, length, width, distance = mirror(N, dx, theta, mirror_coord)
 
 
-#fresnel
-# near = fresnel(field, z= 15)
-# plt.imshow(np.log(np.abs(field.u)))
-# plt.colorbar()
-# plt.show()
-
-#fraunhofer
-far = fraunhofer(field)
-plt.imshow(np.abs(far.u))
-plt.colorbar()
+near = fresnel(aperture, mirror, lamda)
+plt.xlabel("Length (m)")
+plt.ylabel("Width (m)")
+plt.title("Mirror Projection(Fresnel)")
+plt.imshow(np.log(np.abs(near)), extent=[-mirror_coord[0], mirror_coord[0], -mirror_coord[1], mirror_coord[1]])
 plt.show()
-
-#embedded
-# bigger_grid = embed(field, 512)
-# far_higher_res = fraunhofer(bigger_grid)
-# plt.imshow(np.abs(far_higher_res.u))
-# plt.colorbar()
-# plt.show()
-
-
-
-#new? 
-
-#aperture.u,x,y,z
-
-#mirror.u,x,y,z
-
-#freshnel(aperture, mirror, lamda)
-
