@@ -15,12 +15,12 @@ frame_size = [50,50]
 # degree_tilt = np.array([[1,0,0], [0, math.cos(theta), math.sin(theta)], [0, -math.sin(theta), math.cos(theta)]])
 # coord = np.array([[x], [y], [z]])
 # #QUESTION
-mirror_coord = np.array([2,2,4]) #m
+mirror_coord = np.array([4,6,4]) #m
 
 # phase_gradient = (degree_tilt * coord) + mirror_coord
 phase_gradient = 1
 
-def aperture(N, dx,radius, edge_taper, phase_gradient):
+def ap_grid(N, dx,radius, edge_taper, phase_gradient):
     coords = np.linspace(-radius, radius -dx, N)
     x, y = np.meshgrid(coords, coords)
     z = 0
@@ -38,49 +38,80 @@ def aperture(N, dx,radius, edge_taper, phase_gradient):
     return aperture, x, y, z #check output for complex output with xyz values
 
 def mirror(N, dx, theta, mirror_coord):
-    length = ((mirror_coord[0]) * 1000)/2 #mm (/2 to account for pos/negative sides)
-    width = ((mirror_coord[1]) * 1000)/2 #mm
-    distance = ((mirror_coord[2]) *1000)  #mm
+    length = ((mirror_coord[0]))/2
+    width = ((mirror_coord[1]))/2
+    distance = (mirror_coord[2])
     
-    length = np.linspace(-length, length - dx, N)
-    width = np.linspace(-width, width - dx, N)
+    #account for non-square
+    N_x = N 
+    N_y = int(N * (width/length))
+
+    length = np.linspace(-length, length, N_x)
+    width = np.linspace(-width, width, N_y)
 
     x_grid, y_grid = np.meshgrid(length,width)
 
-    mirror = [x_grid, y_grid, distance]
-    return mirror, length, width, distance
+    mirror_data = [x_grid, y_grid, distance]
+
+    return mirror_data, length, width, distance
 
 
-def fresnel(aperture, mirror, lamda):
-    k = 2*np.pi / lamda
-    near_field = np.zeros(shape=(N,N), dtype=complex)
-    # f_length = np.linspace(-frame_size[0]/2, frame_size[0]/2, N)
-    # f_width = np.linspace(-frame_size[1]/2, frame_size[1]/2, N)
+def fresnel(aperture, mirror_data, lamda):
+    # k = 2*np.pi / lamda
+    # distance = float(mirror_data[2])
+    # near_field = np.zeros(shape=(N,N), dtype=complex)
     
-    for i in range(len(length)):
-        for j in range(len(width)):
+    # #create an observational grid (so as to not skew the)
+    # obs_x = np.linspace(-mirror_data[0], mirror_data[0], N)
+    # obs_y = np.linspace(-mirror_data[1], mirror_data[1], N)
+    
+    # for i in range(len(obs_x)):
+    #     for j in range(len(obs_y)):
 
-            #2d array of distances
-            d = np.sqrt((mirror[0] - length[i])**2 + (mirror[1] - width[j])**2 + distance**2)
-            near_field[i,j] = np.sum(aperture * np.exp(1j *k * d) /d )
+    #         #2d array of distances
+    #         d = np.sqrt((x -obs_x[i])**2 + (y -obs_y[j])**2 + distance**2)
+    #         near_field[i,j] = np.sum(aperture * np.exp(1j * k * d) / d, dtype=complex)
+
+    # return near_field
+    k = 2*np.pi / lamda
+    dist = float(mirror_data[2])
+    
+    # Use the actual dimensions from the mirror function
+    # instead of the global N
+    target_x = length  # This is the 'length' array from mirror()
+    target_y = width   # This is the 'width' array from mirror()
+    
+    # Initialize array with (rows, columns) -> (Y, X)
+    near_field = np.zeros(shape=(len(target_y), len(target_x)), dtype=complex)
+    
+    # Loop over width (j/y) and length (i/x)
+    for j in range(len(target_y)):
+        for i in range(len(target_x)):
+            # Distance from all aperture points (x, y) to ONE mirror point
+            d = np.sqrt((x - target_x[i])**2 + (y - target_y[j])**2 + dist**2)
+            
+            # near_field[row, col]
+            near_field[j, i] = np.sum(aperture * np.exp(1j * k * d) / d)
 
     return near_field
+
+
 
 #def fraunhofer(a_grid, m_grid, lamda):
 
 
-aperture, x, y, z = aperture(N, dx,radius, edge_taper, phase_gradient)
+aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 # plt.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
 # plt.xlabel("Diameter of Aperture (mm)")
 # plt.title("Aperture")
 # plt.show()
 
-mirror, length, width, distance = mirror(N, dx, theta, mirror_coord)
+mirror_data, length, width, distance = mirror(N, dx, theta, mirror_coord)
 
 
-near = fresnel(aperture, mirror, lamda)
+near = fresnel(aperture, mirror_data, lamda)
 plt.xlabel("Length (m)")
 plt.ylabel("Width (m)")
-plt.title("Mirror Projection(Fresnel)")
-plt.imshow(np.log(np.abs(near)), extent=[-mirror_coord[0], mirror_coord[0], -mirror_coord[1], mirror_coord[1]])
+plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
+plt.imshow(np.log10(np.abs(near)**2), extent=[length.min(), length.max(), width.min(), width.max()], aspect = 'equal')
 plt.show()

@@ -1,0 +1,106 @@
+\documentclass[twoside]{article}
+
+
+\usepackage{amssymb}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[footnotesize,labelfont=bf]{caption}
+\usepackage{lettrine}
+\usepackage{graphicx}
+%\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{amsmath}
+%\usepackage[singlelinecheck=false, justification=raggedright]{caption}
+\usepackage{graphicx}
+
+
+
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage{sansmathfonts}
+
+%\usepackage[hmarginratio=1:1,top=20mm,bottom=30mm,right=15mm,left=15mm,columnsep=20pt]{geometry}
+%\usepackage{multicol} 
+\usepackage{booktabs}
+\usepackage{float} 
+\usepackage{subfigure}
+\usepackage{paralist} 
+\usepackage{dblfloatfix}
+
+\usepackage{bm}
+\usepackage{gensymb}
+
+\usepackage{hyperref}
+
+\usepackage{abstract}
+\renewcommand{\abstractnamefont}{\bfseries}
+%\renewcommand{\abstracttextfont}{\slshape\small\itshape}
+\usepackage{titlesec}
+%\renewcommand\thesection{\Roman{section}} 
+%\renewcommand\thesubsection{\Alph{subsection}} 
+\titleformat{\section}[block]{\large\centering}{\thesection.}{1em}{} 
+\titleformat{\subsection}[block]{\large\centering}{\thesubsection.}{1em}{}
+
+\usepackage{fancyhdr} 
+\pagestyle{fancy} 
+\fancyfoot{} 
+\fancyfoot[RO,LE]{\thepage} 
+
+\fancypagestyle{style1}{
+\fancyhf{}
+\chead[Column Chromatography Report]{Lydia James}
+\rfoot[]{Page \thepage}
+\lfoot[Page \thepage]{}
+}
+
+\pagestyle{style1}
+
+\fancypagestyle{style2}{
+\fancyhf{}
+\rfoot[]{Page \thepage}
+\lfoot[Page \thepage]{}
+}
+
+
+\begin{document}
+\maketitle
+\thispagestyle{style2}
+
+\vspace{0.005cm}
+%\begin{multicols*}{2}
+\[
+\begin{bmatrix}
+  x' \\
+  y' \\
+  z'
+
+\end{bmatrix}
+= 
+\begin{bmatrix}
+  1 & 0 & 0 \\
+  0 & cos(\theta) & sin(\theta) \\
+  0 & -sin(\theta) & cos(\theta)
+\end{bmatrix}
+\begin{bmatrix}
+  x \\
+  y \\
+  z
+
+\end{bmatrix}
++
+\begin{bmatrix}
+  x(t) \\
+  y(t) \\
+  z(t)
+
+\end{bmatrix}
+\]
+
+\newpage
+
+\end{document}
