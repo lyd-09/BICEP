@@ -2,26 +2,26 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-N = 400 #ideally(400)
+N = 100 #ideally(400)
 radius = .25 #500 mm across!! (.25)
 dx = (2 * radius)/N
 edge_taper = 0.01 #gaussian
 theta = math.pi / 4 #45 degrees (but in rad)
 lamda = 3e-3 #3mm
-frame_size = [50,50]
+#frame_size = [50,50]
 
 #tilted mirror matrices
 # phase_gradient = np.zeros((3,1))
 # degree_tilt = np.array([[1,0,0], [0, math.cos(theta), math.sin(theta)], [0, -math.sin(theta), math.cos(theta)]])
 # coord = np.array([[x], [y], [z]])
-# #QUESTION
-mirror_coord = np.array([1.5,1.5,4]) #m (6,4,4)
 
+mirror_coord = np.array([2.7,1.8,4]) #m (6,4,4)
+z1 = 4
 # phase_gradient = (degree_tilt * coord) + mirror_coord
 phase_gradient = 1
 
 def ap_grid(N, dx,radius, edge_taper, phase_gradient):
-    coords = (np.arange(N) - N/2) * dx
+    coords = (np.arange(N) - (N/2)) * dx
     x, y = np.meshgrid(coords, coords)
     z = 0
 
@@ -54,13 +54,12 @@ def mirror(N, dx, theta, mirror_coord):
 
 
 
-
-
 def fresnel(aperture,x,y, mirror_data, lamda):
+    #angular spatial frequency (optical wave number)
     k = 2 * np.pi / lamda
     dist = float(mirror_data[2])
     
-    #from mirror
+    #from mirror (slicing for scaling)
     t_x = mirror_data[0][0, :]
     t_y = mirror_data[1][:, 0] 
     
@@ -76,21 +75,70 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
 
 
+def fraunhofer(a_grid, m_grid, lamda, dx, z1, near_grid):
+    """
+    aperture: complex 2D array
+    mirror: complex or real 2D array (same shape)
+    wavelength: meters
+    dx: pixel spacing (meters)
+    z1: propagation distance aperture -> mirror (meters)
+    """
+
+    k = 2 * np.pi / lamda
+    
+    # FX, FY = np.meshgrid(fx, fy, indexing='ij')
+
+    # # Fresnel transfer function
+    # H = np.exp(-1j * np.pi * lamda * z1 * (FX**2 + FY**2))
+
+    # # Propagate to mirror
+    # U1 = np.fft.ifft2(np.fft.fft2(aperture) * H)
+
+    # # Apply mirror
+    # U2 = U1 * m_grid
+
+    # Fraunhofer (far field)
+    U_far = np.fft.fft2(near_grid)
+#  # # Fresnel transfer function
+#     H = np.exp(-1j * np.pi * lamda * z1 * (FX**2 + FY**2))
+    center = np.fft.fftshift(U_far)
+
+    I_far = np.abs(center)**2
+
+    #freq coord
+    #rows and cols
+    N, M = a_grid.shape
+
+    # Frequency coordinates for fft 
+    fx = np.fft.fftfreq(N, d=dx)
+    fy = np.fft.fftfreq(M, d=dx)
+    #shifted
+    fx = np.fft.fftshift(fx)
+    fy = np.fft.fftshift(fy)
+
+    #Real units
+    x_far = fx * lamda * z1
+    y_far = fy * lamda * z1
+    
+    #meshy
+    
+    # final = np.fft.ifft2(U_far * H)
 
 
+    return I_far, x_far, y_far
 
-#def fraunhofer(a_grid, m_grid, lamda):
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
-pad = 0
-aperture_padded = np.pad(aperture, ((pad, pad), (pad, pad)), mode='constant')
+#PADDING?
+# pad = 0
+# aperture_padded = np.pad(aperture, ((pad, pad), (pad, pad)), mode='constant')
+# N_new = aperture_padded.shape[0]
+# coords = np.linspace(-radius, radius, N)
+# x_padded, y_padded = np.meshgrid(coords, coords)
 
-N_new = aperture_padded.shape[0]
-coords = np.linspace(-radius, radius, N)
-x_padded, y_padded = np.meshgrid(coords, coords)
-
+#PRINTING THE APERTURE
 # plt.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
 # plt.xlabel("Diameter of Aperture (mm)")
 # plt.title("Aperture")
@@ -98,15 +146,36 @@ x_padded, y_padded = np.meshgrid(coords, coords)
 
 mirror_data, length, width, distance = mirror(N, dx, theta, mirror_coord)
 
+near = fresnel(aperture, x, y, mirror_data, lamda)
 
-near = fresnel(aperture_padded, x_padded, y_padded, mirror_data, lamda)
-plt.xlabel("Length (m)")
-plt.ylabel("Width (m)")
-plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
-plt.imshow(np.log10(np.abs(near)**2 + 1e-15), 
-           extent=[length.min(), length.max(), width.min(), width.max()], 
-           aspect='equal', 
-           origin='lower')
+#PRINT NEAR FIELD MIRROR PROJECTION
+# plt.xlabel("Length (m)")
+# plt.ylabel("Width (m)")
+# plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
+# plt.imshow(np.log10(np.abs(near)**2 + 1e-15), 
+#            extent=[length.min(), length.max(), width.min(), width.max()], 
+#            aspect='equal', 
+#            origin='lower')
+# plt.show()
+
+I_far, x_far, y_far = fraunhofer(aperture, mirror_data, lamda, dx, z1,near)
 
 
+# image boundaries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+x_min, x_max = x_far.min(), x_far.max()
+y_min, y_max = y_far.min(), y_far.max()
+
+#inferno?
+plt.imshow(I_far, cmap='inferno', extent=[x_min, x_max, y_min, y_max], origin='lower')
+
+# Zoom
+plt.xlim(x_min / 10, x_max / 10)
+plt.ylim(y_min / 10, y_max / 10)
+# plt.imshow(I_far, cmap='inferno')
+plt.colorbar(label='Intensity')
+plt.title('Far-field diffraction pattern')
 plt.show()
+
+
+print(I_far)
+
