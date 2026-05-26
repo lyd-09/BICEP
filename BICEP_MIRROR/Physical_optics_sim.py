@@ -4,10 +4,14 @@ import math
 
 N = 100 #ideally(400)
 radius = .25 #500 mm across!! (.25)
-dx = (2 * radius)/N
+
+#window size created for dx adjustments (in far field ect)
+window_size = (radius * 2)
+dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta = math.pi / 4 #45 degrees (but in rad)
+theta =  45 #45 degrees
 lamda = 3e-3 #3mm
+
 #frame_size = [50,50]
 
 #tilted mirror matrices
@@ -53,7 +57,7 @@ def mirror(N, dx, theta, mirror_coord):
     return [x_grid, y_grid, distance], length_axis, width_axis, distance
 
 #Mirror non-flatness
-def mirror_mask(mirror_data, mirror_type='flat',lamda, mirror_tilt=Fasle,theta):
+def mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0):
     k = 2 * np.pi / lamda
     #2d coords from list
     x = mirror_data[0]
@@ -61,7 +65,7 @@ def mirror_mask(mirror_data, mirror_type='flat',lamda, mirror_tilt=Fasle,theta):
 
     if mirror_type == 'flat':
         #amplitude of 1 and phase change of 0
-        return np.ones_like(x, dtype=complex)
+        base_mask = np.ones_like(x, dtype=complex)
     
     #different kinds of distortion
     elif mirror_type== 'distorted':
@@ -72,8 +76,17 @@ def mirror_mask(mirror_data, mirror_type='flat',lamda, mirror_tilt=Fasle,theta):
         #turn from degree to radian
         radian = np.radians(theta)
 
-        #calculate phase added by the tilt 
+        #calculate phase added by the tilt (Eulers formula?)
         tilt_phase = 2 * k * (x * np.tan(radian) + y * np.tan(radian))
+        tilt_mask = np.exp(1j * tilt_phase)
+
+        #apply tilt
+        final_mask = base_mask * tilt_mask
+
+    else:
+        final_mask = base_mask
+
+    return final_mask
 
 def fresnel(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
@@ -92,14 +105,20 @@ def fresnel(aperture,x,y, mirror_data, lamda):
             d = np.sqrt((x - t_x[i])**2 + (y - t_y[j])**2 + dist**2)
             near_field[j, i] = np.sum(aperture * np.exp(1j * k * d) / d)
 
+            #multiply by pixel size
+
     return near_field   #as reflected ONTO mirror
 
 
 
 def fraunhofer(a_grid, m_grid, lamda, dx, z1, near_grid):
+
+    #scaling difference for far field
+    new_dx = ((dx * N) * 5) / N
+
     #freq coord
     #rows and cols
-    N, M = a_grid.shape
+    # N, M = a_grid.shape
     # k = 2 * np.pi / lamda
  
     #Reflection off of mirror
@@ -109,31 +128,58 @@ def fraunhofer(a_grid, m_grid, lamda, dx, z1, near_grid):
 
     # Fraunhofer (far field)
     far = np.fft.fft2(np.fft.fftshift(reflected))
+
 #  # # Fresnel transfer function
 #     H = np.exp(-1j * np.pi * lamda * z1 * (FX**2 + FY**2))
+
     center = np.fft.fftshift(far)
 
-    #intensity calc?
-    center_I = center * (dx**2) / (1j * lamda * z1)
+    #intensity calc? !!!! Change to divided by peak and ln color
+    #center_I = center * (dx**2) / (1j * lamda * z1)
 
-    I_far = np.abs(center_I)**2
+    #linear intensity
+    max_intensity = np.abs(center)**2
+    #peak value
+    max = np.max(max_intensity)
+    index = np.unravel_index(np.argmax(max_intensity), max_intensity.shape)
 
-    # Frequency coordinates for fft 
-    fx = np.fft.fftfreq(N, d=dx)
-    fy = np.fft.fftfreq(M, d=dx)
+    #intensity normalized for graphing
+    normalized = max_intensity / max
 
-    #Real units
-    x_far = fx * lamda * z1
-    y_far = fy * lamda * z1
+    # Frequency coordinates for fft (should be in radians but plot in degrees)
+    # fx = np.fft.fftfreq(N, d=dx/lamda)
+    # fy = np.fft.fftfreq(M, d=dx/lamda)
+    #!!!!! bug fix for indexing 100 rather than reading actual coordinates
+    rows, cols = max_intensity.shape
+    fx = np.fft.fftfreq(cols, d=new_dx/lamda)
+    fy = np.fft.fftfreq(rows, d=new_dx/lamda)
+    #Shift to center array alignment
+    fx_shifted = np.fft.fftshift(fx)
+    fy_shifted = np.fft.fftshift(fy)
+
+    #PLOTTING log intensity (max_intensity is linear intensity)
+    I_far = np.log10(normalized)
+
+    # #Real units (pixel locations into phsycial spatial frequencies)
+    x_far = fx_shifted[index[1]] #col 
+    y_far = fy_shifted[index[0]] #rows
+
+    #graph in degrees
+    x_theta = np.degrees(x_far)
+    y_theta = np.degrees(y_far)
+
+    # realigning peaks for physical spatial tracking in xy
+    # physical_x = x_theta[index[1]]
+    # physical_y = y_theta[index[0]]
 
 
-    return I_far, x_far, y_far
+    return I_far, x_theta, y_theta
 
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
-#PRINTING THE APERTURE
+# PRINTING THE APERTURE
 # plt.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
 # plt.xlabel("Diameter of Aperture (mm)")
 # plt.title("Aperture")
@@ -141,7 +187,7 @@ aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
 mirror_data, length, width, distance = mirror(N, dx, theta, mirror_coord)
 
-m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda, mirror_tilt=true,theta)
+m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
 
 near = fresnel(aperture, x, y, mirror_data, lamda)  #might need to change mirror_data to m_grid and see what happens
 
@@ -149,7 +195,7 @@ near = fresnel(aperture, x, y, mirror_data, lamda)  #might need to change mirror
 # plt.xlabel("Length (m)")
 # plt.ylabel("Width (m)")
 # plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
-# plt.imshow(np.log10(np.abs(near)**2 + 1e-15), 
+# plt.imshow(np.log10(np.abs(near)**2), 
 #            extent=[length.min(), length.max(), width.min(), width.max()], 
 #            aspect='equal', 
 #            origin='lower')
