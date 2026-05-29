@@ -7,6 +7,8 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\base\article.cls
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\base\size10.clo
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\preprint\fullpage.sty
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\preprint\fullpage.sty
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\amsfonts\amssymb.sty
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\amsfonts\amssymb.sty
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\amsfonts\amsfonts.sty
@@ -287,12 +289,16 @@ INPUT .\documentation.out
 INPUT .\documentation.out
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmss10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmss10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssex10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssex10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssmi10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssmi10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssmi7.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssmi7.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmsssy10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmsssy10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmsssy7.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmsssy7.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfss0800.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfss0800.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfss1000.pfb

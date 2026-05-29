@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  27 MAY 2026 13:19
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  29 MAY 2026 14:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -23,6 +23,9 @@ File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
+) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/preprint\fullpage.sty
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip51
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amssymb.sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\amsfonts.sty
@@ -59,16 +62,16 @@ Package: array 2025/06/08 v2.6j Tabular extension package (FMi)
 \ar@mcellbox=\box53
 \extrarowheight=\dimen150
 \NC@list=\toks18
-\extratabsurround=\skip51
-\backup@length=\skip52
+\extratabsurround=\skip52
+\backup@length=\skip53
 \ar@cellbox=\box54
 )
 \everycr=\toks19
-\minrowclearance=\skip53
+\minrowclearance=\skip54
 \rownum=\count283
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amsmath.sty
 Package: amsmath 2025/06/16 v2.17y AMS math features
-\@mathmargin=\skip54
+\@mathmargin=\skip55
 
 For additional information on amsmath, use the `?' option.
 (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/amsmath\amstext.sty
@@ -125,8 +128,8 @@ LaTeX Info: Redefining \Relbar on input line 970.
 \totwidth@=\dimen158
 \lineht@=\dimen159
 \@envbody=\toks23
-\multlinegap=\skip55
-\multlinetaggap=\skip56
+\multlinegap=\skip56
+\multlinetaggap=\skip57
 \mathdisplay@stack=\toks24
 LaTeX Info: Redefining \[ on input line 2949.
 LaTeX Info: Redefining \] on input line 2950.
@@ -188,7 +191,7 @@ LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
 File: microtype-pdftex.def 2025/07/09 v3.2b Definitions specific to pdftex (RS)
 LaTeX Info: Redefining \lsstyle on input line 944.
 LaTeX Info: Redefining \lslig on input line 944.
-\MT@outer@space=\skip57
+\MT@outer@space=\skip58
 )
 Package microtype Info: Loading configuration file microtype.cfg.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/microtype\microtype.cfg
@@ -269,10 +272,10 @@ Package graphics Info: Driver file: pdftex.def on input line 106.
 \Gin@req@width=\dimen192
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/tools\longtable.sty
 Package: longtable 2024-12-18 v4.23 Multi-page Table package (DPC)
-\LTleft=\skip58
-\LTright=\skip59
-\LTpre=\skip60
-\LTpost=\skip61
+\LTleft=\skip59
+\LTright=\skip60
+\LTpre=\skip61
+\LTpost=\skip62
 \LTchunksize=\count308
 \LTcapwidth=\dimen193
 \LT@head=\box61
@@ -409,12 +412,12 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@floatcapt=\box67
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.sty
 Package: subfigure 2002/07/30 v2.1.4 subfigure package
-\subfigtopskip=\skip62
-\subfigcapskip=\skip63
+\subfigtopskip=\skip63
+\subfigcapskip=\skip64
 \subfigcaptopadj=\dimen263
-\subfigbottomskip=\skip64
+\subfigbottomskip=\skip65
 \subfigcapmargin=\dimen264
-\subfiglabelskip=\skip65
+\subfiglabelskip=\skip66
 \c@subfigure=\count318
 \c@lofdepth=\count319
 \c@subtable=\count320
@@ -424,14 +427,14 @@ Package: subfigure 2002/07/30 v2.1.4 subfigure package
 * Local config file subfigure.cfg used *
 ****************************************
 (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/subfigure\subfigure.cfg)
-\subfig@top=\skip66
-\subfig@bottom=\skip67
+\subfig@top=\skip67
+\subfig@bottom=\skip68
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/paralist\paralist.sty
 Package: paralist 2017/01/22 v2.7 Extended list environments
-\pltopsep=\skip68
-\plpartopsep=\skip69
-\plitemsep=\skip70
-\plparsep=\skip71
+\pltopsep=\skip69
+\plpartopsep=\skip70
+\plitemsep=\skip71
+\plparsep=\skip72
 \pl@lab=\toks33
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/dblfloatfix\dblfloatfix.sty
 Package: dblfloatfix 2012/12/31 v1.0a (JAW)
@@ -555,19 +558,19 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
 )
-\Hy@SectionHShift=\skip72
+\Hy@SectionHShift=\skip73
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/abstract\abstract.sty
 Package: abstract 2009/06/08 v1.2a configurable abstracts
-\abstitleskip=\skip73
-\absleftindent=\skip74
-\absrightindent=\skip75
-\absparindent=\skip76
-\absparsep=\skip77
+\abstitleskip=\skip74
+\absleftindent=\skip75
+\absrightindent=\skip76
+\absparindent=\skip77
+\absparsep=\skip78
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/titlesec\titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \ttl@box=\box68
-\beforetitleunit=\skip78
-\aftertitleunit=\skip79
+\beforetitleunit=\skip79
+\aftertitleunit=\skip80
 \ttl@plus=\dimen269
 \ttl@minus=\dimen270
 \ttl@toksa=\toks34
@@ -576,62 +579,62 @@ Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \titlewidthfirst=\dimen273
 ) (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/fancyhdr\fancyhdr.sty
 Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
-\f@nch@headwidth=\skip80
-\f@nch@offset@elh=\skip81
-\f@nch@offset@erh=\skip82
-\f@nch@offset@olh=\skip83
-\f@nch@offset@orh=\skip84
-\f@nch@offset@elf=\skip85
-\f@nch@offset@erf=\skip86
-\f@nch@offset@olf=\skip87
-\f@nch@offset@orf=\skip88
-\f@nch@height=\skip89
-\f@nch@footalignment=\skip90
-\f@nch@widthL=\skip91
-\f@nch@widthC=\skip92
-\f@nch@widthR=\skip93
+\f@nch@headwidth=\skip81
+\f@nch@offset@elh=\skip82
+\f@nch@offset@erh=\skip83
+\f@nch@offset@olh=\skip84
+\f@nch@offset@orh=\skip85
+\f@nch@offset@elf=\skip86
+\f@nch@offset@erf=\skip87
+\f@nch@offset@olf=\skip88
+\f@nch@offset@orf=\skip89
+\f@nch@height=\skip90
+\f@nch@footalignment=\skip91
+\f@nch@widthL=\skip92
+\f@nch@widthC=\skip93
+\f@nch@widthR=\skip94
 \@temptokenb=\toks35
 )
-LaTeX Font Info:    Trying to load font information for T1+xcmss on input line 81.
+LaTeX Font Info:    Trying to load font information for T1+xcmss on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\t1xcmss.fd
 File: t1xcmss.fd 2024/10/15
 ) (documentation.aux)
 \openout1 = `documentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmssm/m/it on input line 81.
-LaTeX Font Info:    Trying to load font information for OML+cmssm on input line 81.
+LaTeX Font Info:    Checking defaults for OML/cmssm/m/it on input line 82.
+LaTeX Font Info:    Trying to load font information for OML+cmssm on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\omlcmssm.fd
 File: omlcmssm.fd 2024/10/15
 )
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OMS/cmsssy/m/n on input line 81.
-LaTeX Font Info:    Trying to load font information for OMS+cmsssy on input line 81.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OMS/cmsssy/m/n on input line 82.
+LaTeX Font Info:    Trying to load font information for OMS+cmsssy on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\omscmsssy.fd
 File: omscmsssy.fd 2024/10/15
 )
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OMX/cmssex/m/n on input line 81.
-LaTeX Font Info:    Trying to load font information for OMX+cmssex on input line 81.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for OMX/cmssex/m/n on input line 82.
+LaTeX Font Info:    Trying to load font information for OMX+cmssex on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\omxcmssex.fd
 File: omxcmssex.fd 2024/10/15
 )
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for U/xcmss/m/n on input line 81.
-LaTeX Font Info:    Trying to load font information for U+xcmss on input line 81.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for U/xcmss/m/n on input line 82.
+LaTeX Font Info:    Trying to load font information for U+xcmss on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\uxcmss.fd
 File: uxcmss.fd 2024/10/15
 )
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 82.
+LaTeX Font Info:    ... okay on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count335
@@ -651,13 +654,13 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
-LaTeX Info: Redefining \microtypecontext on input line 81.
-Package microtype Info: Applying patch `item' on input line 81.
-Package microtype Info: Applying patch `toc' on input line 81.
-Package microtype Info: Applying patch `eqnum' on input line 81.
-Package microtype Info: Applying patch `footnote' on input line 81.
-Package microtype Info: Applying patch `verbatim' on input line 81.
-LaTeX Info: Redefining \microtypesetup on input line 81.
+LaTeX Info: Redefining \microtypecontext on input line 82.
+Package microtype Info: Applying patch `item' on input line 82.
+Package microtype Info: Applying patch `toc' on input line 82.
+Package microtype Info: Applying patch `eqnum' on input line 82.
+Package microtype Info: Applying patch `footnote' on input line 82.
+Package microtype Info: Applying patch `verbatim' on input line 82.
+LaTeX Info: Redefining \microtypesetup on input line 82.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -681,29 +684,29 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 )
 Package caption Info: subfigure package is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Redeclaring symbol font `AMSa' on input line 81.
+LaTeX Font Info:    Redeclaring symbol font `AMSa' on input line 82.
 LaTeX Font Info:    Overwriting symbol font `AMSa' in version `normal'
-(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 81.
+(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 82.
 LaTeX Font Info:    Overwriting symbol font `AMSa' in version `bold'
-(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 81.
-LaTeX Font Info:    Redeclaring symbol font `AMSb' on input line 81.
+(Font)                  U/msa/m/n --> U/ssmsa/m/n on input line 82.
+LaTeX Font Info:    Redeclaring symbol font `AMSb' on input line 82.
 LaTeX Font Info:    Overwriting symbol font `AMSb' in version `normal'
-(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 81.
+(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 82.
 LaTeX Font Info:    Overwriting symbol font `AMSb' in version `bold'
-(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 81.
+(Font)                  U/msb/m/n --> U/ssmsb/m/n on input line 82.
 
 Redefining \end@dblfloat\ for use with subfigure
-LaTeX Info: Redefining \celsius on input line 81.
-Package gensymb Info: Faking symbols for \degree and \celsius on input line 81.
+LaTeX Info: Redefining \celsius on input line 82.
+Package gensymb Info: Faking symbols for \degree and \celsius on input line 82.
 
 Package gensymb Warning: Not defining \perthousand.
 
-LaTeX Info: Redefining \ohm on input line 81.
-Package gensymb Info: Using \Omega for \ohm on input line 81.
+LaTeX Info: Redefining \ohm on input line 82.
+Package gensymb Info: Using \Omega for \ohm on input line 82.
 
 Package gensymb Warning: Not defining \micro.
 
-Package hyperref Info: Link coloring OFF on input line 81.
+Package hyperref Info: Link coloring OFF on input line 82.
 (documentation.out) (documentation.out)
 \@outlinefile=\write3
 \openout3 = `documentation.out'.
@@ -711,9 +714,9 @@ Package hyperref Info: Link coloring OFF on input line 81.
 
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <18> not available
-(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 83.
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 84.
 
-LaTeX Font Info:    Trying to load font information for OT1+cmsmf on input line 83.
+LaTeX Font Info:    Trying to load font information for OT1+cmsmf on input line 84.
 (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\ot1cmsmf.fd
 File: ot1cmsmf.fd 2024/10/15
 )
@@ -721,24 +724,21 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `cmsmf' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Trying to load font information for U+ssmsa on input line 83.
+LaTeX Font Info:    Trying to load font information for U+ssmsa on input line 84.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\ussmsa.fd
 File: ussmsa.fd 2024/10/15
 )
-LaTeX Font Info:    Trying to load font information for U+ssmsb on input line 83.
+LaTeX Font Info:    Trying to load font information for U+ssmsb on input line 84.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\ussmsb.fd
 File: ussmsb.fd 2024/10/15
 )
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <12> not available
-(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 86.
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 87.
 
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <8> not available
-(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 114.
-
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 109.
 
 
 
@@ -746,16 +746,23 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 {C:/Users/lj350/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 
+
+Package fancyhdr Warning: \headheight is too small (0.0pt): 
+(fancyhdr)                Make it at least 12.0pt, for example:
+(fancyhdr)                \setlength{\headheight}{12.0pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
+
 [2]
 
-[3]
-Overfull \hbox (9.75197pt too wide) in paragraph at lines 164--165
-[]\T1/xcmss/m/n/10 (-20) Peak Nor-mal-iza-tion - Fraun-hofer func-tion: https://blogs.bath.ac.uk/python/finding-
- []
 
+Package fancyhdr Warning: \headheight is too small (0.0pt): 
+(fancyhdr)                Make it at least 12.0pt, for example:
+(fancyhdr)                \setlength{\headheight}{12.0pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
 
-
-[4] (documentation.aux)
+[3] (documentation.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-08-13>
@@ -764,17 +771,17 @@ Package rerunfilecheck Info: File `documentation.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 16887 strings out of 468133
- 278047 string characters out of 5430712
- 726250 words of memory out of 5000000
- 45178 multiletter control sequences out of 15000+600000
- 651032 words of font info for 131 fonts, out of 8000000 for 9000
+ 16908 strings out of 468133
+ 278674 string characters out of 5430712
+ 730370 words of memory out of 5000000
+ 45204 multiletter control sequences out of 15000+600000
+ 650724 words of font info for 127 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,1068b,482s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb>
-Output written on documentation.pdf (4 pages, 129134 bytes).
+ 75i,11n,79p,1068b,481s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb>
+Output written on documentation.pdf (3 pages, 143891 bytes).
 PDF statistics:
- 75 PDF objects out of 1000 (max. 8388607)
- 6 named destinations out of 1000 (max. 500000)
+ 81 PDF objects out of 1000 (max. 8388607)
+ 5 named destinations out of 1000 (max. 500000)
  22529 words of extra memory for PDF output out of 24883 (max. 10000000)
 

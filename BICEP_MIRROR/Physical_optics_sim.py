@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+
+#can also abstract wavenumber to golabal variables
+
+
 N = 100 #ideally(400)
 radius = .25 #500 mm across!! (.25)
 
@@ -9,20 +13,19 @@ radius = .25 #500 mm across!! (.25)
 window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta =  45 #45 degrees
+theta_1 =  45 #45 degrees
+theta_2 = 0
 lamda = 3e-3 #3mm
 
 #frame_size = [50,50]
 
-#tilted mirror matrices
-# phase_gradient = np.zeros((3,1))
-# degree_tilt = np.array([[1,0,0], [0, math.cos(theta), math.sin(theta)], [0, -math.sin(theta), math.cos(theta)]])
-# coord = np.array([[x], [y], [z]])
 
 mirror_coord = np.array([2.7,1.8,4]) #m 
 #but i might be having to use mm.....
 # mirror_coord = np.array([2700, 1800, 4000]) #mm
-z1 = 4
+
+z1 = 200 #m (where thermal source is, but reccomended 2000 for Fresnel number of 0.12; which gives reasonable Fraunhofer approx)
+
 # phase_gradient = (degree_tilt * coord) + mirror_coord
 phase_gradient = 1
 
@@ -47,152 +50,100 @@ def mirror(N, dx, theta, mirror_coord):
     L_val = mirror_coord[0] / 2 
     W_val = mirror_coord[1] / 2 
     distance = mirror_coord[2]
+
+     #wave number
+    # k = 2 * np.pi / lamda
+    # alpha = np.radians(2 * theta)  ### Check to make sure not same theta 
     
     # Use N for the SHORTER side, and scale up for the LONGER side
     N_x = int(2 * L_val / dx)
     N_y = int(2 * W_val / dx)
 
-    length_axis = (np.arange(N_x) - N_x//2) * dx
+    length_axis = (np.arange(N_x) - N_x//2) * dx ##Check dx here.....
     width_axis = (np.arange(N_y) - N_y//2) * dx
 
     x_grid, y_grid = np.meshgrid(length_axis, width_axis)
-    return [x_grid, y_grid, distance], length_axis, width_axis, distance
 
-#Mirror non-flatness
-def mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0):
-    k = 2 * np.pi / lamda
-    #2d coords from list
-    x = mirror_data[0]
-    y = mirror_data[1]
 
-    if mirror_type == 'flat':
-        #amplitude of 1 and phase change of 0
-        base_mask = np.ones_like(x, dtype=complex)
-    
-    #different kinds of distortion
-    elif mirror_type== 'distorted':
-        pass
-    else:
-        raise ValueError("Unknown mirror type: {mirror_type}")
-    if mirror_tilt:
-        #turn from degree to radian
-        radian = np.radians(theta)
+    #apply tilt coordinates forward along the x-axis
+    X_tilt = x_grid
+    Y_tilt = y_grid * np.cos(np.radians(theta))
+    Z_tilt = distance + y_grid * np.sin(np.radians(theta))
 
-        #calculate phase added by the tilt (Eulers formula?)
-        tilt_phase = 2 * k * (x * np.tan(radian) + y * np.tan(radian))
-        tilt_mask = np.exp(1j * tilt_phase)
 
-        #apply tilt
-        final_mask = base_mask * tilt_mask
+    #beam steering parameters !!!! ignore for now
+    # path_difference = (x_grid * np.cos(theta) + y_grid * np.sin(theta)) * np.tan(alpha)
+    # phase_tilt = np.exp(1j * k * path_difference)
+    # phase_output = 
 
-    else:
-        final_mask = base_mask
+    #mirror tilt
 
-    return final_mask
+
+    return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
+
 
 def fresnel(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
     k = 2 * np.pi / lamda
-    dist = float(mirror_data[2])
-    
+    dist = mirror_data[2]
+
+
     #from mirror (slicing for scaling)
-    t_x = mirror_data[0][0, :]
-    t_y = mirror_data[1][:, 0] 
+    t_x_1d = mirror_data[0][0, :]
+    t_y_1d = mirror_data[1][:, 0] 
+    t_x, t_y = np.meshgrid(t_x_1d, t_y_1d) #puts into a 100 by 100 2d shape
+
+    rows, cols = t_x.shape[0], t_x.shape[1]
     
     # (Rows Cols)
-    near_field = np.zeros((len(t_y), len(t_x)), dtype=complex)
-    
-    for j in range(len(t_y)):     
-        for i in range(len(t_x)): 
-            d = np.sqrt((x - t_x[i])**2 + (y - t_y[j])**2 + dist**2)
+    near_field = np.zeros((rows, cols), dtype=complex)
+
+    # d_rows, d_cols = dist.shape
+
+
+    for j in range(rows):     
+        for i in range(cols): 
+            obs_x = t_x[j,i]
+            obs_y = t_y[j,i]
+
+            obs_dist = mirror_data[2][j,i]
+
+            d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
             near_field[j, i] = np.sum(aperture * np.exp(1j * k * d) / d)
 
             #multiply by pixel size
-
+    #phase adjustment
+    # new_near_field = near_field * phase_tilt
     return near_field   #as reflected ONTO mirror
 
 
 
-def fraunhofer(a_grid, m_grid, lamda, dx, z1, near_grid):
-    #Everything here just in meters i guessss
-    #scaling difference for far field (should be the physical width of the source grid/ number of rows in )
-    width_aperture = 1.8 #m
+def fraunhofer(a_grid, m_grid, lamda, window_size, dx, z1, near_grid):
+
+    #if propagating from aperture vs if propagating from mirror
+    width_aperture = window_size #m
     rows_in_ap = a_grid.shape[0] #complex values
+
+    #scaling difference for far field (should be the physical width of the source grid/ number of rows in ) !!!!!! global variable? 
     new_dx = width_aperture / rows_in_ap
 
     #wave number
     k = 2 * np.pi / lamda
-    #for the sake of not braking the code (propagation distance)
-    zz = 200 #m (reccomended 2000 for Fresnel number of 0.12 which gives reasonable Fraunhofer approx)
-    obs_sidelength = (lamda * zz) / new_dx
-    obs_sample_interval = lamda * zz / width_aperture
-    num_pixels = int(rows_in_ap)
-    obs_coord =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_sample_interval, num_pixels) #start/stop
+
+    #setting up variables for FFT far field (obs = observational)
+    obs_sidelength = (lamda * z1) / new_dx
+    obs_dx = lamda * z1 / width_aperture
+    obs_coord =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(rows_in_ap))
     [X2,Y2] = np.meshgrid(obs_coord,obs_coord)
+    
     #complex amplitude scaling factor
-    c = 1/(1j*lamda * zz) * np.exp(1j*k/(2*zz) * (X2 ** 2 + Y2 ** 2))
+    c = 1/(1j*lamda * z1) * np.exp(1j*k/(2*z1) * (X2 ** 2 + Y2 ** 2))
+
     #wave transformation 
     obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(a_grid)))
     obs_plane_field = c * obs_plane * (new_dx ** 2)
 
     return obs_plane_field, X2, Y2
-
-#     ########old function
- 
-#     #Reflection off of mirror
-#     reflected = near_grid * m_grid
-
-#     # FX, FY = np.meshgrid(fx, fy, indexing='ij')
-
-#     # Fraunhofer (far field)
-#     far = np.fft.fft2(np.fft.fftshift(reflected))
-
-# #  # # Fresnel transfer function
-# #     H = np.exp(-1j * np.pi * lamda * z1 * (FX**2 + FY**2))
-
-#     center = np.fft.fftshift(far)
-
-#     #intensity calc? !!!! Change to divided by peak and ln color
-#     #center_I = center * (dx**2) / (1j * lamda * z1)
-
-#     #linear intensity
-#     max_intensity = np.abs(center)**2
-#     #peak value
-#     max = np.max(max_intensity)
-#     index = np.unravel_index(np.argmax(max_intensity), max_intensity.shape)
-
-#     #intensity normalized for graphing
-#     normalized = max_intensity / max
-
-#     # Frequency coordinates for fft (should be in radians but plot in degrees)
-#     # fx = np.fft.fftfreq(N, d=dx/lamda)
-#     # fy = np.fft.fftfreq(M, d=dx/lamda)
-#     #!!!!! bug fix for indexing 100 rather than reading actual coordinates
-#     rows, cols = max_intensity.shape
-#     fx = np.fft.fftfreq(cols, d=new_dx)
-#     fy = np.fft.fftfreq(rows, d=new_dx)
-#     #Shift to center array alignment
-#     fx_shifted = np.fft.fftshift(fx)
-#     fy_shifted = np.fft.fftshift(fy)
-
-#     #PLOTTING log intensity (max_intensity is linear intensity)
-#     I_far = np.log10(normalized)
-
-#     # #Real units (pixel locations into phsycial spatial frequencies)
-#     x_far = fx_shifted[index[1]] #col 
-#     y_far = fy_shifted[index[0]] #rows
-
-#     #graph in degrees
-#     x_theta = np.degrees(x_far)
-#     y_theta = np.degrees(y_far)
-
-#     # realigning peaks for physical spatial tracking in xy
-#     # physical_x = x_theta[index[1]]
-#     # physical_y = y_theta[index[0]]
-
-
-#     return I_far, x_theta, y_theta
-
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
@@ -203,13 +154,41 @@ aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 # plt.title("Aperture")
 # plt.show()
 
-mirror_data, length, width, distance = mirror(N, dx, theta, mirror_coord)
+mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord)
 
-m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
+mirror_data_2, length, width, distance = mirror(N, dx, theta_2, mirror_coord)
 
-near = fresnel(aperture, x, y, mirror_data, lamda)  #might need to change mirror_data to m_grid and see what happens
+# m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
 
-# # PRINT NEAR FIELD MIRROR PROJECTION
+
+near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
+
+near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
+
+# PRINT NEAR FIELD MIRROR PROJECTION
+
+#Subplots
+fig, (one, two) = plt.subplots(1,2, figsize =( 14, 6))
+
+im1 = one.imshow(np.log10(np.abs(near)**2), 
+           extent=[length.min(), length.max(), width.min(), width.max()], 
+           aspect='equal', 
+           origin='lower')
+one.set_title(f"Mirror Projection {distance} (m) {theta_1} $^\circ$")
+one.set_xlabel("Length (m)")
+one.set_ylabel("Width (m)")
+
+im2 = two.imshow(np.log10(np.abs(near_2)**2), 
+           extent=[length.min(), length.max(), width.min(), width.max()], 
+           aspect='equal', 
+           origin='lower')
+two.set_title(f"Mirror Projection {distance} (m) {theta_2} $^\circ$")
+two.set_xlabel("Length (m)")
+two.set_ylabel("Width (m)")
+
+plt.show()
+
+#for single image
 # plt.xlabel("Length (m)")
 # plt.ylabel("Width (m)")
 # plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
@@ -219,27 +198,24 @@ near = fresnel(aperture, x, y, mirror_data, lamda)  #might need to change mirror
 #            origin='lower')
 # plt.show()
 
-I_far, x_far, y_far = fraunhofer(aperture, m_grid, lamda, dx, z1,near)
+# I_far, x_far, y_far = fraunhofer(aperture, m_grid, lamda, window_size, dx, z1,near)
 
-# #PRINTING FAR FIELD
+# # #PRINTING FAR FIELD
 
-# #perfectly center zoom?
+# # #perfectly center zoom?
+# # image boundaries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# x_min, x_max = x_far.min(), x_far.max()
+# y_min, y_max = y_far.min(), y_far.max()
 
+# plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 
-# image boundaries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-x_min, x_max = x_far.min(), x_far.max()
-y_min, y_max = y_far.min(), y_far.max()
+# # # Zoom
+# # plt.xlim(x_min / 10, x_max / 10)
+# # plt.ylim(y_min / 10, y_max / 10)
 
-#inferno?
-plt.imshow(np.log10(np.abs(I_far)**2), cmap='inferno', extent=[x_min, x_max, y_min, y_max], origin='lower')
-
-# # Zoom
-# plt.xlim(x_min / 10, x_max / 10)
-# plt.ylim(y_min / 10, y_max / 10)
-
-plt.colorbar(label='Intensity')
-plt.title('Far-field diffraction pattern')
-plt.show()
+# plt.colorbar(label='Intensity')
+# plt.title('Far-field diffraction pattern')
+# plt.show()
 
 
 

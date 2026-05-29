@@ -1,5 +1,6 @@
 \documentclass[twoside]{article}
 
+\usepackage{fullpage}
 
 \usepackage{amssymb}
 \usepackage[table,xcdraw]{xcolor}
@@ -84,26 +85,20 @@
 
 %\begin{multicols*}{2}
 \section*{\centering{\textbf{Purpose}}}
-This project focuses on applying a physical optics simulation to better understand a calibration technique that is used on the BICEP array telescope at the south pole.To calibrate the telescope, a mirror is hoisted above the aperture to observe a controlled calibration source about 200 meters away. The mirror redirects the beam from the aperture to point towards this thermal source. This mimics far-field measurements and allows for corrections in beam mapping to be made before observing. As instrumentation has been updated over time, there has been some evidence of minor mirror non-flatness. This has caused some of the beam maps to become slightly more elliptically shaped, corresponding to different regions on the mirror. 
-My project focuses on creating a physical optics simulation that replicates this beam mapping process. 
-
 The code implements fresnel and fraunhofer diffraction techniques, as well as beam steering to accurately incorporate all aspects of this process. The overall goal of this project is to replicate the mirror calibration process that is used on BICEP array so that we can compare the data from the telescope beam maps and the simulation, to find a quantitative assessment of how the mirror non-flatness might be affecting areas of the beam maps. 
 
-
-\section*{\centering{\textbf{Breaking down the Code}}}
-
 \subsection*{\centering{\textbf{Global Variables}}}
-Some variables were abstracted into Global variables to allow for customazation of the simulation. The variables are as follows:
+Global variables allow for customazation of the simulation. The variables are as follows:
 \begin{table}[H]
     \begin{center}
         \begin{tabular}{|c|c|}
         \hline
         Variable & What it does\\
         \hline\hline
-            N & changes the number of pixel points\\
-            Radius & R of aperture \\
-            dx & spatial pixel resolution \\
-            edge taper & . \\
+            N & number of grid points\\
+            Radius & Radius of circular aperture \\
+            dx & spacing between grid points \\
+            edge taper & controls the gaussian fade\\
             theta &.  \\
             lamda & . \\
             mirror coord &  .\\
@@ -115,23 +110,30 @@ Some variables were abstracted into Global variables to allow for customazation 
 \end{table}
 
 
-
 \section*{\centering{\textbf{Aperture Creation}}}
-The aperture function focuses on creating a meshgrid that 
+The aperture function focuses on creating a 2d spatial grid that defines a circular aperture. It uses an N number of grid points, with a dx spacing between each of the points.
 
 
-The dx remains the same for the aperture function and the fresnel function, since both use the same physical grid spacing. 
+The dx remains the same for the aperture function and the fresnel function, since both use the same physical grid spacing. (1)
+
+The coordinate array is centered at zero and a gaussian taper is applied to replicate the illumination of the aperture in experimental values.
 
 \section*{\centering{\textbf{Mirror Creation}}}
 The mirror function takes the mirror coordinates provided in the global variables section and focuses on 
 
 \section*{\centering{\textbf{Fresnel Diffraction}}}
-This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. Rather than using an FFT here, a for loop is used with the following equation:
+This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. Rather than using an FFT here, a for loop is used with the diffraction by Huygen's principle:
 \begin{equation*}
-    kt
+    E(x',y') = \iint A(x,y) \frac{e^{ikd}}{d} dx dy 
 \end{equation*}
 
-This ensures that the Fresnel diffraction teqnique is preserved and accurate. 
+This ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
+
+
+BEAM STEERING 
+\begin{equation*}
+    \alpha = 2 \times \phi_{mirror}
+\end{equation*}
 
 \section*{\centering{\textbf{Fraunhofer Diffraction}}}
 When doing Fraunhofer diffraction from the plane of the mirror to the far field, an FFT can be used. 
@@ -159,7 +161,6 @@ The output grid of an FFT is typically in meters (-1), these spatial frequencies
 \newpage
 \section*{\centering{\textbf{References}}}
 
-Though most of the documentation used was refrenced from the use of matlab, these methods can be tranfered into python code using library documentation like numpy and (). 
 
 Peak Normalization - Fraunhofer function: https://blogs.bath.ac.uk/python/finding-maximum-values-from-arrays/
 
@@ -167,5 +168,9 @@ Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrume
 
 
 % DX verification techniques : https://labsites.rochester.edu/fienup/wp-content/uploads/2019/07/ASJ_ArbSampFTs_JOSAA2018.pdf
+
+% alpha mirror tilt (beam steering): https://scholar.afit.edu/cgi/viewcontent.cgi?article=1811&context=facpub
+
+% Numerical Methods for Physicists !!!!!! For flattening (1d in mirror tilt)
 
 \end{document}

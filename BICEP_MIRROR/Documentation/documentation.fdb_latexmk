@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1779902397.9436 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1779902404.49292 0
+["pdflatex"] 1780078547.60606 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1780078549.75712 0
   "C:/Users/lj350/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1776463255 467389 9766898b4f138f4b45ecae7f29dc345c ""
   "C:/Users/lj350/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1758407254 13257343 a244d020d8275d22801b144b411f6c93 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1001775420 2971 def0b6c1f0b107b3b936def894055589 ""
@@ -55,9 +55,11 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb" 1215618300 151158 f92315ca710dfd59dae90641f694ef82 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb" 1215618300 148436 6a185415b8a1b77c58fee2272f3574e2 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb" 1215618300 144018 78ee202c0d340458a26cbb39f48b6bb2 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb" 1729261307 27911 5964aff9520f976137063d69478d97d8 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb" 1729261307 35623 101e49908231eab492565c8022c5e7f8 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb" 1729261307 36108 800de5e25b143f7a45fb7671a91723da ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb" 1729261307 42737 641adf4048036b5c44a002e2577631c6 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb" 1729261307 43631 34edee2c77cf8a80d1b6f503fc415b11 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/vf/public/sansmathfonts/cmsmf10.vf" 1729261307 836 9084b0cf760a8de48745947ae9205757 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/generic/babel/babel.sty" 1754220793 146665 9149bce97203d4030d7cbe4f4e85dfc4 ""
@@ -129,6 +131,7 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/microtype/microtype.cfg" 1752015111 27628 65e257a6863987c0e5097054c917d02d ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/microtype/microtype.sty" 1752015111 102775 cc4629d7100508b1ba679322aef9b545 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/paralist/paralist.sty" 1485161856 15336 82c76ebe8f06becf69ab309565b2a0cb ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/preprint/fullpage.sty" 1369148873 2867 05b418f78b224ec872f5b11081138605 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/refcount/refcount.sty" 1576433952 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1751104012 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/sansmathfonts/omlcmssm.fd" 1729261307 1047 3e12171904a8bc64d1280842a7f72cae ""
@@ -150,10 +153,10 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "TS1cmsmf.fd" 0 -1 0 ""
   "TS1xcmss.fd" 0 -1 0 ""
-  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1779902391 6347 736cf472aebf1f0ff72a5f3446234394 ""
-  "documentation.aux" 1779902403 416 e0a5e7987b8a94c7ff4fced599a38057 "pdflatex"
-  "documentation.out" 1779902402 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "documentation.tex" 1779902391 6347 736cf472aebf1f0ff72a5f3446234394 ""
+  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1780078546 5914 1bb374cf9fe22d21d159c5800afbdc32 ""
+  "documentation.aux" 1780078549 416 30725b8bc1f5c2f507140320b52810c3 "pdflatex"
+  "documentation.out" 1780078549 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "documentation.tex" 1780078546 5914 1bb374cf9fe22d21d159c5800afbdc32 ""
   (generated)
   "documentation.aux"
   "documentation.log"
