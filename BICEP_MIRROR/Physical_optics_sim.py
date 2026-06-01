@@ -13,7 +13,7 @@ radius = .25 #500 mm across!! (.25)
 window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta_1 =  45 #45 degrees
+theta_1 =  0 #45 degrees
 theta_2 = 0
 lamda = 3e-3 #3mm
 
@@ -44,16 +44,21 @@ def ap_grid(N, dx,radius, edge_taper, phase_gradient):
     inside = r < radius
     aperture[inside] = np.exp(-alpha * r[inside] ** 2)
 
-    return aperture, x, y, z #check output for complex output with xyz values
+    #Beam Steering
+    k = 2 * np.pi / lamda 
+    #parameters
+    alpha_steer = np.radians(25) #(forwar/backwar tilt)
+    theta_steer = np.radians(25) #roation of that tilt to steer in different quadrants
+
+    tilt_phase = k * (x * np.cos(theta_steer) + y * np.sin(theta_steer)) * np.tan(alpha_steer)
+    steered_aperture = aperture * np.exp(1j * tilt_phase)
+
+    return steered_aperture, x, y, z #check output for complex output with xyz values
 
 def mirror(N, dx, theta, mirror_coord):
     L_val = mirror_coord[0] / 2 
     W_val = mirror_coord[1] / 2 
     distance = mirror_coord[2]
-
-     #wave number
-    # k = 2 * np.pi / lamda
-    # alpha = np.radians(2 * theta)  ### Check to make sure not same theta 
     
     # Use N for the SHORTER side, and scale up for the LONGER side
     N_x = int(2 * L_val / dx)
@@ -69,14 +74,6 @@ def mirror(N, dx, theta, mirror_coord):
     X_tilt = x_grid
     Y_tilt = y_grid * np.cos(np.radians(theta))
     Z_tilt = distance + y_grid * np.sin(np.radians(theta))
-
-
-    #beam steering parameters !!!! ignore for now
-    # path_difference = (x_grid * np.cos(theta) + y_grid * np.sin(theta)) * np.tan(alpha)
-    # phase_tilt = np.exp(1j * k * path_difference)
-    # phase_output = 
-
-    #mirror tilt
 
 
     return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
@@ -168,27 +165,27 @@ near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 # PRINT NEAR FIELD MIRROR PROJECTION
 
 #Subplots
-fig, (one, two) = plt.subplots(1,2, figsize =( 14, 6))
+# fig, (one, two) = plt.subplots(1,2, figsize =( 14, 6))
 
-im1 = one.imshow(np.log10(np.abs(near)**2), 
-           extent=[length.min(), length.max(), width.min(), width.max()], 
-           aspect='equal', 
-           origin='lower')
-one.set_title(f"Mirror Projection {distance} (m) {theta_1} $^\circ$")
-one.set_xlabel("Length (m)")
-one.set_ylabel("Width (m)")
+# im1 = one.imshow(np.log10(np.abs(near)**2), 
+#            extent=[length.min(), length.max(), width.min(), width.max()], 
+#            aspect='equal', 
+#            origin='lower')
+# one.set_title(f"Mirror Projection {distance} (m) {theta_1} $^\circ$")
+# one.set_xlabel("Length (m)")
+# one.set_ylabel("Width (m)")
 
-im2 = two.imshow(np.log10(np.abs(near_2)**2), 
-           extent=[length.min(), length.max(), width.min(), width.max()], 
-           aspect='equal', 
-           origin='lower')
-two.set_title(f"Mirror Projection {distance} (m) {theta_2} $^\circ$")
-two.set_xlabel("Length (m)")
-two.set_ylabel("Width (m)")
+# im2 = two.imshow(np.log10(np.abs(near_2)**2), 
+#            extent=[length.min(), length.max(), width.min(), width.max()], 
+#            aspect='equal', 
+#            origin='lower')
+# two.set_title(f"Mirror Projection {distance} (m) {theta_2} $^\circ$")
+# two.set_xlabel("Length (m)")
+# two.set_ylabel("Width (m)")
 
-plt.show()
+# plt.show()
 
-#for single image
+# #for single image
 # plt.xlabel("Length (m)")
 # plt.ylabel("Width (m)")
 # plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
@@ -198,16 +195,16 @@ plt.show()
 #            origin='lower')
 # plt.show()
 
-# I_far, x_far, y_far = fraunhofer(aperture, m_grid, lamda, window_size, dx, z1,near)
+I_far, x_far, y_far = fraunhofer(aperture, m_grid, lamda, window_size, dx, z1,near)
 
 # # #PRINTING FAR FIELD
 
 # # #perfectly center zoom?
 # # image boundaries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# x_min, x_max = x_far.min(), x_far.max()
-# y_min, y_max = y_far.min(), y_far.max()
+x_min, x_max = x_far.min(), x_far.max()
+y_min, y_max = y_far.min(), y_far.max()
 
-# plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 
 # # # Zoom
 # # plt.xlim(x_min / 10, x_max / 10)

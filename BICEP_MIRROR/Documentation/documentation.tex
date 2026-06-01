@@ -127,13 +127,17 @@ This function uses fresnel teqniques as found in (ref Optical physics third edit
     E(x',y') = \iint A(x,y) \frac{e^{ikd}}{d} dx dy 
 \end{equation*}
 
+% also known as rayleigh - sommerfeld/fresnel integral
+
 This ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
 
 
 BEAM STEERING 
 \begin{equation*}
-    \alpha = 2 \times \phi_{mirror}
+    \phi = k(xcos(theta) + ysin(theta))tan(\alpha)
 \end{equation*}
+
+In order to steer the beam source two different angles must be defined. Here, there is a tilt angle ($$\alpha$$) and a rotation angle ($$\theta$$) on the x-axis. (insert ref)
 
 \section*{\centering{\textbf{Fraunhofer Diffraction}}}
 When doing Fraunhofer diffraction from the plane of the mirror to the far field, an FFT can be used. 
