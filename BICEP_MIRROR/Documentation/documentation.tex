@@ -121,6 +121,9 @@ The coordinate array is centered at zero and a gaussian taper is applied to repl
 \section*{\centering{\textbf{Mirror Creation}}}
 The mirror function takes the mirror coordinates provided in the global variables section and focuses on 
 
+DISTORTION:
+
+
 \section*{\centering{\textbf{Fresnel Diffraction}}}
 This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. Rather than using an FFT here, a for loop is used with the diffraction by Huygen's principle:
 \begin{equation*}
@@ -149,6 +152,8 @@ Peak Normalization teqniques are used to better view the diffraction patterns. B
 %     \includegraphics[width=0.5\textwidth]{diagram.jpg}
 %     \caption{Energy diagram for the SN1 reaction}
 % \end{figure}
+
+In order to keep the beam steering, and tilts applied to the aperture and mirror, the nearfield output from the fresnel diffraction function is input into the fraunhoffer function. This allows for all features applied to be carried through accurately into the far field projection. 
 
 Global scaling for FFT:
 \begin{equation*}

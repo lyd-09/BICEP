@@ -47,13 +47,14 @@ def ap_grid(N, dx,radius, edge_taper, phase_gradient):
     #Beam Steering
     k = 2 * np.pi / lamda 
     #parameters
-    alpha_steer = np.radians(25) #(forwar/backwar tilt)
-    theta_steer = np.radians(25) #roation of that tilt to steer in different quadrants
+    alpha_steer = np.radians(0) #(forwar/backwar tilt)
+    theta_steer = np.radians(0) #roation of that tilt to steer in different quadrants
 
     tilt_phase = k * (x * np.cos(theta_steer) + y * np.sin(theta_steer)) * np.tan(alpha_steer)
     steered_aperture = aperture * np.exp(1j * tilt_phase)
 
     return steered_aperture, x, y, z #check output for complex output with xyz values
+
 
 def mirror(N, dx, theta, mirror_coord):
     L_val = mirror_coord[0] / 2 
@@ -75,6 +76,13 @@ def mirror(N, dx, theta, mirror_coord):
     Y_tilt = y_grid * np.cos(np.radians(theta))
     Z_tilt = distance + y_grid * np.sin(np.radians(theta))
 
+    #distortion effects
+    # height_of_bumps = 1 #peak height? 1m
+    # length_of_bumps = 5 #pixels wide?
+
+    # bumpiness = height_of_bumps * length_of_bumps
+
+    # Z_tilt = z1 + bumpiness
 
     return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
 
@@ -115,7 +123,7 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
 
 
-def fraunhofer(a_grid, m_grid, lamda, window_size, dx, z1, near_grid):
+def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid):
 
     #if propagating from aperture vs if propagating from mirror
     width_aperture = window_size #m
@@ -164,7 +172,7 @@ near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 
 # PRINT NEAR FIELD MIRROR PROJECTION
 
-#Subplots
+#Subplots for mirror tilt
 # fig, (one, two) = plt.subplots(1,2, figsize =( 14, 6))
 
 # im1 = one.imshow(np.log10(np.abs(near)**2), 
@@ -195,24 +203,51 @@ near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 #            origin='lower')
 # plt.show()
 
-I_far, x_far, y_far = fraunhofer(aperture, m_grid, lamda, window_size, dx, z1,near)
+#PRINTING APERTURE LINEAR AND LOG
 
-# # #PRINTING FAR FIELD
+fig, (five, six) = plt.subplots(1,2, figsize = (14,6))
 
-# # #perfectly center zoom?
-# # image boundaries!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-x_min, x_max = x_far.min(), x_far.max()
-y_min, y_max = y_far.min(), y_far.max()
+img5 = five.imshow(np.abs(near)**2, extent=[length.min(), length.max(), width.min(), width.max()], 
+          aspect='equal', 
+           origin='lower')
+five.set_title(f"Mirror Projection Linear")
+fig.colorbar(img5, ax=five, label='Intensity')
 
-plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+img6 = six.imshow(np.log10(np.abs(near)**2),extent=[length.min(), length.max(), width.min(), width.max()], 
+          aspect='equal', 
+           origin='lower')
+six.set_title(f"Mirror Projection Log")
+fig.colorbar(img6, ax=six, label='Intensity')
 
-# # # Zoom
-# # plt.xlim(x_min / 10, x_max / 10)
-# # plt.ylim(y_min / 10, y_max / 10)
+plt.show()
 
+# I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near)
+
+# # #PRINTING FAR FIELD 
+
+# x_min, x_max = x_far.min(), x_far.max()
+# y_min, y_max = y_far.min(), y_far.max()
+
+#single image
+# plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 # plt.colorbar(label='Intensity')
 # plt.title('Far-field diffraction pattern')
 # plt.show()
+
+#subplots (log and linear sidebyside)
+
+# fig, (three, four) = plt.subplots(1,2, figsize = (14,6))
+
+# img3 = three.imshow(np.abs(I_far)**2,extent=[x_min, x_max, y_min, y_max], origin='lower')
+# three.set_title(f"Far-Field diffraction linear")
+# fig.colorbar(img3, ax=three, label='Intensity')
+
+# img4 = four.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# four.set_title(f"Far-Field diffraction Log")
+# fig.colorbar(img4, ax=four, label='Intensity')
+
+# plt.show()
+
 
 
 
