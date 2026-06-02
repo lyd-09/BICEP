@@ -13,9 +13,11 @@ radius = .25 #500 mm across!! (.25) aperture
 window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta_1 =  0 #45 degrees
-theta_2 = 0
+theta_1 =  45 #45 degrees
 lamda = 3e-3 #3mm
+#mainly for side by side comparisons
+theta_2 = 0
+
 
 #frame_size = [50,50]
 
@@ -90,7 +92,8 @@ def mirror(N, dx, theta, mirror_coord):
 def fresnel(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
     k = 2 * np.pi / lamda
-    dist = mirror_data[2]
+    phase_tilt_adjustment = -1 + 0j
+
 
 
     #from mirror (slicing for scaling)
@@ -115,11 +118,9 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
             d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
             near_field[j, i] = np.sum(aperture * np.exp(1j * k * d) / d)
-
-            #multiply by pixel size
     #phase adjustment
-    # new_near_field = near_field * phase_tilt
-    return near_field   #as reflected ONTO mirror
+    new_near_field = near_field * phase_tilt_adjustment
+    return new_near_field   #as reflected ONTO mirror
 
 
 

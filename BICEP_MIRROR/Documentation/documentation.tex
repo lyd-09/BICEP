@@ -134,6 +134,12 @@ This function uses fresnel teqniques as found in (ref Optical physics third edit
 
 This ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
 
+ACCOMODATING THE ANGLED REFLECTION:
+(multiply by -1 terminology)
+Since the Fraunhofer calculation is simulated as it reflects off the mirror at a 45 degree angle, the Near field output needs to be multiplied by -1 to account for this change in direction. According to Euler's formula, we can multiply the following phase sift by the produced output to achieve this effect.
+ \begin{equation*}
+    e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
+\end{equation*}
 
 BEAM STEERING 
 \begin{equation*}
@@ -166,7 +172,7 @@ The output grid of an FFT is typically in meters (-1), these spatial frequencies
 
 \section*{\centering{\textbf{On going questions}}}
 
-Fraunhofer isn't going from mirror? its going from apertuer?
+
 
 
 
@@ -188,5 +194,12 @@ Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrume
 % alpha mirror tilt (beam steering): https://scholar.afit.edu/cgi/viewcontent.cgi?article=1811&context=facpub
 
 % Numerical Methods for Physicists !!!!!! For flattening (1d in mirror tilt)
+
+% photots and visuals to explain : http://www.pmaweb.caltech.edu/Courses/ph136/yr2011/1008.1.K.pdf
+
+% for more reading and on pase shifts:
+
+  Goodman, Joseph W. Introduction to Fourier Optics. McGraw-Hill, 1968.
+
 
 \end{document}
