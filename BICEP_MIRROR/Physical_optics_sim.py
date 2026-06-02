@@ -7,7 +7,7 @@ import math
 
 
 N = 100 #ideally(400)
-radius = .25 #500 mm across!! (.25)
+radius = .25 #500 mm across!! (.25) aperture
 
 #window size created for dx adjustments (in far field ect)
 window_size = (radius * 2)
@@ -123,21 +123,25 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
 
 
-def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid):
+def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
 
-    #if propagating from aperture vs if propagating from mirror
+    #if propagating from aperture vs if propagating from mirror (just change or swap between widths of aperture vs widths of mirror and new_dx, and dk)
     width_aperture = window_size #m
     rows_in_ap = a_grid.shape[0] #complex values
 
-    #scaling difference for far field (should be the physical width of the source grid/ number of rows in ) !!!!!! global variable? 
+    #scaling difference for far field (should be the physical width of the source grid/ number of rows in ) !!!!!! global variable? (possibly use 'dk' as in frequency (fft) spatial coords to real space)
     new_dx = width_aperture / rows_in_ap
+
+    width_mirror = mirror_coord[1]
+    rows_in_mirror = near_grid.shape[0]
+    dk = width_mirror / rows_in_mirror
 
     #wave number
     k = 2 * np.pi / lamda
 
     #setting up variables for FFT far field (obs = observational)
-    obs_sidelength = (lamda * z1) / new_dx
-    obs_dx = lamda * z1 / width_aperture
+    obs_sidelength = (lamda * z1) / dk
+    obs_dx = lamda * z1 / width_mirror
     obs_coord =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(rows_in_ap))
     [X2,Y2] = np.meshgrid(obs_coord,obs_coord)
     
@@ -161,14 +165,16 @@ aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
 mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord)
 
-mirror_data_2, length, width, distance = mirror(N, dx, theta_2, mirror_coord)
+# #only need for side by side subplots 
+# mirror_data_2, length, width, distance = mirror(N, dx, theta_2, mirror_coord)
 
 # m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
 
 
 near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
 
-near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
+# #only need for side by side subplots
+# near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 
 # PRINT NEAR FIELD MIRROR PROJECTION
 
@@ -205,34 +211,34 @@ near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 
 #PRINTING APERTURE LINEAR AND LOG
 
-fig, (five, six) = plt.subplots(1,2, figsize = (14,6))
+# fig, (five, six) = plt.subplots(1,2, figsize = (14,6))
 
-img5 = five.imshow(np.abs(near)**2, extent=[length.min(), length.max(), width.min(), width.max()], 
-          aspect='equal', 
-           origin='lower')
-five.set_title(f"Mirror Projection Linear")
-fig.colorbar(img5, ax=five, label='Intensity')
+# img5 = five.imshow(np.abs(near)**2, extent=[length.min(), length.max(), width.min(), width.max()], 
+#           aspect='equal', 
+#            origin='lower')
+# five.set_title(f"Mirror Projection Linear")
+# fig.colorbar(img5, ax=five, label='Intensity')
 
-img6 = six.imshow(np.log10(np.abs(near)**2),extent=[length.min(), length.max(), width.min(), width.max()], 
-          aspect='equal', 
-           origin='lower')
-six.set_title(f"Mirror Projection Log")
-fig.colorbar(img6, ax=six, label='Intensity')
+# img6 = six.imshow(np.log10(np.abs(near)**2),extent=[length.min(), length.max(), width.min(), width.max()], 
+#           aspect='equal', 
+#            origin='lower')
+# six.set_title(f"Mirror Projection Log")
+# fig.colorbar(img6, ax=six, label='Intensity')
 
-plt.show()
-
-# I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near)
-
-# # #PRINTING FAR FIELD 
-
-# x_min, x_max = x_far.min(), x_far.max()
-# y_min, y_max = y_far.min(), y_far.max()
-
-#single image
-# plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
-# plt.colorbar(label='Intensity')
-# plt.title('Far-field diffraction pattern')
 # plt.show()
+
+I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
+
+# # # #PRINTING FAR FIELD 
+
+x_min, x_max = x_far.min(), x_far.max()
+y_min, y_max = y_far.min(), y_far.max()
+
+# single image
+plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+plt.colorbar(label='Intensity')
+plt.title('Far-field diffraction pattern')
+plt.show()
 
 #subplots (log and linear sidebyside)
 
