@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  2 JUN 2026 12:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  4 JUN 2026 16:30
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -738,7 +738,7 @@ LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <12> not available
 
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <8> not available
-(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 109.
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 111.
 
 
 
@@ -771,17 +771,17 @@ Package rerunfilecheck Info: File `documentation.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 16912 strings out of 468133
- 278718 string characters out of 5430712
- 730370 words of memory out of 5000000
+ 16908 strings out of 468133
+ 278670 string characters out of 5430712
+ 732370 words of memory out of 5000000
  45204 multiletter control sequences out of 15000+600000
- 650878 words of font info for 129 fonts, out of 8000000 for 9000
+ 651034 words of font info for 128 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,11n,79p,1068b,481s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb>
-Output written on documentation.pdf (3 pages, 148271 bytes).
+ 75i,11n,79p,1068b,474s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb>
+Output written on documentation.pdf (3 pages, 155934 bytes).
 PDF statistics:
- 81 PDF objects out of 1000 (max. 8388607)
+ 86 PDF objects out of 1000 (max. 8388607)
  5 named destinations out of 1000 (max. 500000)
  22529 words of extra memory for PDF output out of 24883 (max. 10000000)
 
