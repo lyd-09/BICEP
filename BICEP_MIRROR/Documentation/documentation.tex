@@ -116,7 +116,10 @@ Global variables allow for customazation of the simulation. The variables are as
 The aperture function focuses on creating a 2d spatial grid that defines a circular aperture.
  It uses an N number of grid points along each axis, and grid spacing (dx) in the x and y directions.
  The aperture is gnerated with a Gaussian edge taper to simulate real teqniques. This means that some of the parts of the grid
- are non-zero, simulating a circular aperture. 
+ are non-zero, simulating a circular aperture. The function used to help create this is as follows:
+ \begin{equation*}
+    r = \sqrt{x[i,j]^2 + y[i,j]^2}
+\end{equation*}
 
 
 The dx remains the same for the aperture function and the fresnel function, since both use the same physical grid spacing. (1)
