@@ -99,10 +99,12 @@ Global variables allow for customazation of the simulation. The variables are as
             Radius & Radius of circular aperture \\
             dx & spacing between grid points \\
             edge taper & controls the gaussian fade\\
-            theta &.  \\
-            lamda & . \\
-            mirror coord &  .\\
+            theta_1 and theta_2 & Steering angles for tilt adjustments \\
+            lamda & wavelength of light being observed\\
+            mirror coord &  Cartesian coordinates for the mirror system\\
+            window_size & Size of the grid used in Fresnel diffraction \\
             phase gradient & . \\
+            z_far & Far-field distance in () \\
         \hline
         \end{tabular}
     \end{center}
@@ -111,35 +113,15 @@ Global variables allow for customazation of the simulation. The variables are as
 
 
 \section*{\centering{\textbf{Aperture Creation}}}
-The aperture function focuses on creating a 2d spatial grid that defines a circular aperture. It uses an N number of grid points, with a dx spacing between each of the points.
+The aperture function focuses on creating a 2d spatial grid that defines a circular aperture.
+ It uses an N number of grid points along each axis, and grid spacing (dx) in the x and y directions.
+ The aperture is gnerated with a Gaussian edge taper to simulate real teqniques. This means that some of the parts of the grid
+ are non-zero, simulating a circular aperture. 
 
 
 The dx remains the same for the aperture function and the fresnel function, since both use the same physical grid spacing. (1)
 
 The coordinate array is centered at zero and a gaussian taper is applied to replicate the illumination of the aperture in experimental values.
-
-\section*{\centering{\textbf{Mirror Creation}}}
-The mirror function takes the mirror coordinates provided in the global variables section and focuses on 
-
-DISTORTION:
-
-
-\section*{\centering{\textbf{Fresnel Diffraction}}}
-This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. Rather than using an FFT here, a for loop is used with the diffraction by Huygen's principle:
-\begin{equation*}
-    E(x',y') = \iint A(x,y) \frac{e^{ikd}}{d} dx dy 
-\end{equation*}
-
-% also known as rayleigh - sommerfeld/fresnel integral
-
-This ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
-
-ACCOMODATING THE ANGLED REFLECTION:
-(multiply by -1 terminology)
-Since the Fraunhofer calculation is simulated as it reflects off the mirror at a 45 degree angle, the Near field output needs to be multiplied by -1 to account for this change in direction. According to Euler's formula, we can multiply the following phase sift by the produced output to achieve this effect.
- \begin{equation*}
-    e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
-\end{equation*}
 
 BEAM STEERING 
 \begin{equation*}
@@ -148,10 +130,41 @@ BEAM STEERING
 
 In order to steer the beam source two different angles must be defined. Here, there is a tilt angle ($$\alpha$$) and a rotation angle ($$\theta$$) on the x-axis. (insert ref)
 
+\section*{\centering{\textbf{Mirror Creation}}}
+The mirror function creates new coordinates that can be used for the fresnel calculation.
+It also implements beam steering (theta) for tilt adjustments of the beam.
+
+DISTORTION:
+
+
+\section*{\centering{\textbf{Fresnel Diffraction}}}
+This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. 
+Rather than using an FFT here, a for loop is utilized with the diffraction by Huygen's principle:
+\begin{equation*}
+    E(x',y') = \iint A(x,y) \frac{e^{ikd}}{d} dx dy 
+\end{equation*}
+The for loop ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
+
+This function also accounts for the complex phase shift that is created from the tilted mirror 
+
+% also known as rayleigh - sommerfeld/fresnel integral
+
+
+ACCOMODATING THE ANGLED REFLECTION:
+(multiply by -1 terminology)
+Since the Fraunhofer calculation is simulated as it reflects off the mirror at a 45 degree angle, the Near field output needs to be multiplied by -1 to account for this change in direction. 
+According to Euler's formula, we can multiply the following phase shift by the produced output to achieve this effect.
+ \begin{equation*}
+    e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
+\end{equation*}
+
+
+
 \section*{\centering{\textbf{Fraunhofer Diffraction}}}
 When doing Fraunhofer diffraction from the plane of the mirror to the far field, an FFT can be used. 
 
-Peak Normalization teqniques are used to better view the diffraction patterns. Both a log scale and the linear scale of the peak normalization are visable below:
+%Peak Normalization teqniques are used to better view the diffraction patterns. 
+Both a log scale and the linear scale of the FFTs are visable below:
 
 % \begin{figure}[H]
 %     \centering
@@ -159,18 +172,19 @@ Peak Normalization teqniques are used to better view the diffraction patterns. B
 %     \caption{Energy diagram for the SN1 reaction}
 % \end{figure}
 
-In order to keep the beam steering, and tilts applied to the aperture and mirror, the nearfield output from the fresnel diffraction function is input into the fraunhoffer function. This allows for all features applied to be carried through accurately into the far field projection. 
+The nearfield output from the fresnel diffraction function is input into the fraunhoffer function. 
+This allows for all features applied to be carried through accurately into the far field projection. 
 
-Global scaling for FFT:
-\begin{equation*}
-    \Delta f_x = \frac{1}{N \cdot \Delta x}
-\end{equation*}
-The output grid of an FFT is typically in meters (-1), these spatial frequencies map to physical angles in radians using the light's wavelength:
-\begin{equation*}
-    \Delta \theta_x = \frac{\lambda}{N \cdot \Delta x}
-\end{equation*}
+% Global scaling for FFT:
+% \begin{equation*}
+%     \Delta f_x = \frac{1}{N \cdot \Delta x}
+% \end{equation*}
+% The output grid of an FFT is typically in meters (-1), these spatial frequencies map to physical angles in radians using the light's wavelength:
+% \begin{equation*}
+%     \Delta \theta_x = \frac{\lambda}{N \cdot \Delta x}
+% \end{equation*}
 
-\section*{\centering{\textbf{On going questions}}}
+% \section*{\centering{\textbf{On going questions}}}
 
 
 
