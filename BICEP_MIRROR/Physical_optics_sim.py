@@ -88,13 +88,9 @@ def mirror(N, dx, theta, mirror_coord):
 
     return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
 
-
-def fresnel(aperture,x,y, mirror_data, lamda):
+def fresnel_0(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
     k = 2 * np.pi / lamda
-    phase_tilt_adjustment = -1 + 0j
-
-
 
     #from mirror (slicing for scaling)
     t_x_1d = mirror_data[0][0, :]
@@ -106,7 +102,32 @@ def fresnel(aperture,x,y, mirror_data, lamda):
     # (Rows Cols)
     near_field = np.zeros((rows, cols), dtype=complex)
 
-    # d_rows, d_cols = dist.shape
+
+    for j in range(rows):     
+        for i in range(cols): 
+            obs_x = t_x[j,i]
+            obs_y = t_y[j,i]
+
+            obs_dist = mirror_data[2][j,i]
+
+            d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
+            near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
+            
+    return near_field   #as reflected ONTO mirror
+
+def fresnel(aperture,x,y, mirror_data, lamda):
+    #angular spatial frequency (optical wave number)
+    k = 2 * np.pi / lamda
+
+    #from mirror (slicing for scaling)
+    t_x_1d = mirror_data[0][0, :]
+    t_y_1d = mirror_data[1][:, 0] 
+    t_x, t_y = np.meshgrid(t_x_1d, t_y_1d) #puts into a 100 by 100 2d shape
+
+    rows, cols = t_x.shape[0], t_x.shape[1]
+    
+    # (Rows Cols)
+    near_field = np.zeros((rows, cols), dtype=complex)
 
 
     for j in range(rows):     
@@ -117,11 +138,46 @@ def fresnel(aperture,x,y, mirror_data, lamda):
             obs_dist = mirror_data[2][j,i]
 
             d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
-            near_field[j, i] = np.sum(aperture * np.exp(1j * k * d) / d)
-    #phase adjustment
-    new_near_field = near_field * phase_tilt_adjustment
-    return new_near_field   #as reflected ONTO mirror
+            near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
+            #for complex number multiplication to occur
+            phase_tilt_adjustment = np.exp(1j*obs_y*k)
+            point = near_field[j, i]
+            #adjustment for mirror reflection
+            near_field[j, i] = point * phase_tilt_adjustment
+            
+    return near_field   #as reflected ONTO mirror
 
+def fresnel_1(aperture,x,y, mirror_data, lamda):
+    #angular spatial frequency (optical wave number)
+    k = 2 * np.pi / lamda
+
+    #from mirror (slicing for scaling)
+    t_x_1d = mirror_data[0][0, :]
+    t_y_1d = mirror_data[1][:, 0] 
+    t_x, t_y = np.meshgrid(t_x_1d, t_y_1d) #puts into a 100 by 100 2d shape
+
+    rows, cols = t_x.shape[0], t_x.shape[1]
+
+    # (Rows Cols)
+    near_field = np.zeros((rows, cols), dtype=complex)
+
+
+    for j in range(rows):     
+        for i in range(cols): 
+            obs_x = t_x[j,i]
+            obs_y = t_y[j,i]
+
+            obs_dist = mirror_data[2][j,i]
+
+            d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
+            near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
+            #for complex number multiplication to occur
+            phase_tilt_adjustment = np.exp((1j*obs_y)/lamda)
+            point = near_field[j, i]
+            #adjustment for mirror reflection
+            near_field[j, i] = point * phase_tilt_adjustment
+        
+    return near_field 
 
 
 def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
@@ -173,7 +229,9 @@ mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord)
 
 
 near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
+# near_1 = fresnel_1(aperture, x, y, mirror_data_1, lamda)
 
+# near_0 = fresnel_0(aperture, x, y, mirror_data_1, lamda)
 # #only need for side by side subplots
 # near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
 
@@ -200,10 +258,10 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirr
 
 # plt.show()
 
-# #for single image
+# for single image
 # plt.xlabel("Length (m)")
 # plt.ylabel("Width (m)")
-# plt.title(f"Mirror Projection(Fresnel) Distance {distance} (m)")
+# plt.title(f"Mirror Projection with phase adjustment")
 # plt.imshow(np.log10(np.abs(near)**2), 
 #            extent=[length.min(), length.max(), width.min(), width.max()], 
 #            aspect='equal', 
@@ -230,15 +288,25 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirr
 
 I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
 
-# # # #PRINTING FAR FIELD 
+# I_far_1, x_far_1, y_far_1 = fraunhofer(aperture, lamda, window_size, dx, z1,near_1, mirror_coord)
+
+# I_far_0, x_far_0, y_far_0 = fraunhofer(aperture, lamda, window_size, dx, z1,near_0, mirror_coord)
+
+# # # # #PRINTING FAR FIELD 
 
 x_min, x_max = x_far.min(), x_far.max()
 y_min, y_max = y_far.min(), y_far.max()
 
+# x_min_1, x_max_1 = x_far_1.min(), x_far_1.max()
+# y_min_1, y_max_1 = y_far_1.min(), y_far_1.max()
+
+# x_min_0, x_max_0 = x_far_0.min(), x_far_0.max()
+# y_min_0, y_max_0 = y_far_0.min(), y_far_0.max()
+plot = np.log10(np.abs(I_far)) * np.sign(np.real(I_far))
 # single image
-plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+plt.imshow(plot, extent=[x_min, x_max, y_min, y_max], origin='lower')
 plt.colorbar(label='Intensity')
-plt.title('Far-field diffraction pattern')
+plt.title('Far-field with tilt phase adjustment')
 plt.show()
 
 #subplots (log and linear sidebyside)
@@ -255,6 +323,26 @@ plt.show()
 
 # plt.show()
 
+
+# #side by side for FFT phase adjustment off mirror (in fresnel)
+# fig, (three, four, five) = plt.subplots(1,3, figsize = (14,6))
+
+# img3 = three.imshow(np.log10(np.abs(I_far)**2),extent=[x_min, x_max, y_min, y_max], origin='lower')
+# three.set_title(f"Phase Adjust of e^(iky)")
+# # fig.colorbar(img3, ax=three, label='Intensity')
+
+
+# img5 = five.imshow(np.log10(np.abs(I_far_0)**2),extent=[x_min_0, x_max_0, y_min_0, y_max_0], origin='lower')
+# five.set_title(f"No Phase Adjustment")
+# # fig.colorbar(img5, ax=five, label='Intensity')
+
+# img4 = four.imshow(np.log10(np.abs(I_far_1)**2), extent=[x_min_1, x_max_1, y_min_1, y_max_1], origin='lower')
+# four.set_title(f"Phase Adjust of e^(iy/wavelength)")
+# # fig.colorbar(img4, ax=four, label='Intensity')
+
+
+# plt.tight_layout()
+# plt.show()
 
 
 
