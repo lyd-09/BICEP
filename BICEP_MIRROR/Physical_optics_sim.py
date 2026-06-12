@@ -13,7 +13,7 @@ radius = .25 #500 mm across!! (.25) aperture
 window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta_1 =  45 #45 degrees
+theta_1 =  0 #45 degrees
 lamda = 3e-3 #3mm
 #mainly for side by side comparisons
 theta_2 = 0
@@ -80,14 +80,14 @@ def mirror(N, dx, theta, mirror_coord,lamda):
     Y_tilt = y_grid * np.cos(np.radians(theta))
     Z_tilt = distance + y_grid * np.sin(np.radians(theta))
 
-    #phase adjustment for mirror reflection at an angle
-    phase_tilt_adjustment = np.exp(1j*Y_tilt*k)
+    #phase adjustment for mirror reflection at an angle (possible error)
+    # phase_tilt_adjustment = np.exp(1j*Y_tilt*k)
 
-    x_reflect = X_tilt * phase_tilt_adjustment
-    y_reflect = Y_tilt * phase_tilt_adjustment
-    z_reflect = Z_tilt * phase_tilt_adjustment
+    # x_reflect = X_tilt * phase_tilt_adjustment
+    # y_reflect = Y_tilt * phase_tilt_adjustment
+    # z_reflect = Z_tilt * phase_tilt_adjustment
 
-    return [x_reflect, y_reflect, z_reflect], length_axis, width_axis, distance
+    return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
 
 # def bilinear_interpolation(x,y,data):
     #import data points
@@ -98,7 +98,7 @@ def mirror(N, dx, theta, mirror_coord,lamda):
 
     #return new interpolated data points to compare to flat mirror ect
 
-    
+
 
 
 def fresnel_0(aperture,x,y, mirror_data, lamda):
@@ -324,10 +324,10 @@ y_min, y_max = y_far.min(), y_far.max()
 # plt.show()
 
 ## FIXING
-plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
-plt.colorbar(label='Intensity')
-plt.title('Far-field with tilt phase adjustment')
-plt.show()
+# plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# plt.colorbar(label='Intensity')
+# plt.title('Far-field with tilt phase adjustment')
+# plt.show()
 
 #subplots (log and linear sidebyside)
 
@@ -365,4 +365,42 @@ plt.show()
 # plt.show()
 
 
+
+#new printing layout six side by side
+fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
+
+ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
+ap.set_title("Aperture Amplitude")
+ap.set_xlabel("Diameter of Aperture (mm)")
+
+close1 = close.imshow(np.log10(np.abs(near)**2), 
+            extent=[length.min(), length.max(), width.min(), width.max()], 
+            aspect='equal', 
+            origin='lower')
+close.set_title("Mirror Projection Amplitude")
+close.set_xlabel("Length (m)")
+close.set_ylabel("Width (m)")
+
+far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+far.set_title("Far-field Amplitude")
+fig.colorbar(far1, ax=far, label="Intensity")
+
+ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
+ap_phase.set_title("Aperture Phase")
+ap_phase.set_xlabel("Diameter of Aperture (mm)")
+
+close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
+            extent=[length.min(), length.max(), width.min(), width.max()], 
+            aspect='equal', 
+            origin='lower')
+close_phase.set_title("Mirror Projection Phase")
+close_phase.set_xlabel("Length (m)")
+close_phase.set_ylabel("Width (m)")
+
+far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
+far_phase.set_title("Far-field Phase")
+fig.colorbar(far2, ax=far_phase, label="Intensity")
+
+plt.tight_layout()
+plt.show()
 
