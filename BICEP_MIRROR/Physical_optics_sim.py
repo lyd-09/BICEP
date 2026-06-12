@@ -58,7 +58,9 @@ def ap_grid(N, dx,radius, edge_taper, phase_gradient):
     return steered_aperture, x, y, z #check output for complex output with xyz values
 
 
-def mirror(N, dx, theta, mirror_coord):
+def mirror(N, dx, theta, mirror_coord,lamda):
+    k = 2* np.pi / lamda
+
     L_val = mirror_coord[0] / 2 
     W_val = mirror_coord[1] / 2 
     distance = mirror_coord[2]
@@ -78,15 +80,26 @@ def mirror(N, dx, theta, mirror_coord):
     Y_tilt = y_grid * np.cos(np.radians(theta))
     Z_tilt = distance + y_grid * np.sin(np.radians(theta))
 
-    #distortion effects
-    # height_of_bumps = 1 #peak height? 1m
-    # length_of_bumps = 5 #pixels wide?
+    #phase adjustment for mirror reflection at an angle
+    phase_tilt_adjustment = np.exp(1j*Y_tilt*k)
 
-    # bumpiness = height_of_bumps * length_of_bumps
+    x_reflect = X_tilt * phase_tilt_adjustment
+    y_reflect = Y_tilt * phase_tilt_adjustment
+    z_reflect = Z_tilt * phase_tilt_adjustment
 
-    # Z_tilt = z1 + bumpiness
+    return [x_reflect, y_reflect, z_reflect], length_axis, width_axis, distance
 
-    return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
+# def bilinear_interpolation(x,y,data):
+    #import data points
+
+    #interpolate data points 
+
+    #assign to mesh grid 
+
+    #return new interpolated data points to compare to flat mirror ect
+
+    
+
 
 def fresnel_0(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
@@ -140,10 +153,10 @@ def fresnel(aperture,x,y, mirror_data, lamda):
             d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
             near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
             #for complex number multiplication to occur
-            phase_tilt_adjustment = np.exp(1j*obs_y*k)
-            point = near_field[j, i]
-            #adjustment for mirror reflection
-            near_field[j, i] = point * phase_tilt_adjustment
+            # phase_tilt_adjustment = np.exp(1j*obs_y*k)
+            # point = near_field[j, i]
+            # #adjustment for mirror reflection
+            # near_field[j, i] = point * phase_tilt_adjustment
             
     return near_field   #as reflected ONTO mirror
 
@@ -220,7 +233,7 @@ aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 # plt.title("Aperture")
 # plt.show()
 
-mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord)
+mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord,lamda)
 
 # #only need for side by side subplots 
 # mirror_data_2, length, width, distance = mirror(N, dx, theta_2, mirror_coord)
@@ -302,9 +315,16 @@ y_min, y_max = y_far.min(), y_far.max()
 
 # x_min_0, x_max_0 = x_far_0.min(), x_far_0.max()
 # y_min_0, y_max_0 = y_far_0.min(), y_far_0.max()
-plot = np.log10(np.abs(I_far)) * np.sign(np.real(I_far))
+# plot = np.log10(np.abs(I_far)) * np.sign(np.real(I_far))
 # single image
-plt.imshow(plot, extent=[x_min, x_max, y_min, y_max], origin='lower')
+# plot = np.abs(I_far)**2
+# plt.imshow(np.atan2(np.imag(plot), np.real(plot)), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# plt.colorbar(label='Intensity')
+# plt.title('Far-field with tilt phase adjustment')
+# plt.show()
+
+## FIXING
+plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 plt.colorbar(label='Intensity')
 plt.title('Far-field with tilt phase adjustment')
 plt.show()
