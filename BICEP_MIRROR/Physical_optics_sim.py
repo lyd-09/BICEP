@@ -228,163 +228,19 @@ def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
-# PRINTING THE APERTURE
-# plt.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
-# plt.xlabel("Diameter of Aperture (mm)")
-# plt.title("Aperture")
-# plt.show()
-
 mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord,lamda)
 
 new_mirror_z = bilinear_interpolation(mirror_data_1)
 
+#mirror plotting
 Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
 plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z)
-#plotting mirror contour for check
-# contour = plt.contourf(mirror_data_1[0],mirror_data_1[1],new_mirror_z)
-# cbar = plt.colorbar(contour)
-# cbar.set_label("Z(um)")
-
-# plt.title("Contour map of Mirror Linear Interpolation")
-# plt.xlabel("X Coord(m)")
-# plt.ylabel("Y Coord(m)")
-
-# plt.grid(True)
-
-# plt.gca().set_aspect('equal', adjustable='box')
-
-# plt.show()
-
-# #only need for side by side subplots 
-# mirror_data_2, length, width, distance = mirror(N, dx, theta_2, mirror_coord)
 
 # m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
 
-
 # near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
-# # near_1 = fresnel_1(aperture, x, y, mirror_data_1, lamda)
-
-# # near_0 = fresnel_0(aperture, x, y, mirror_data_1, lamda)
-# # #only need for side by side subplots
-# # near_2 = fresnel(aperture, x, y, mirror_data_2, lamda)
-
-# # PRINT NEAR FIELD MIRROR PROJECTION
-
-# #Subplots for mirror tilt
-# # fig, (one, two) = plt.subplots(1,2, figsize =( 14, 6))
-
-# # im1 = one.imshow(np.log10(np.abs(near)**2), 
-# #            extent=[length.min(), length.max(), width.min(), width.max()], 
-# #            aspect='equal', 
-# #            origin='lower')
-# # one.set_title(f"Mirror Projection {distance} (m) {theta_1} $^\circ$")
-# # one.set_xlabel("Length (m)")
-# # one.set_ylabel("Width (m)")
-
-# # im2 = two.imshow(np.log10(np.abs(near_2)**2), 
-# #            extent=[length.min(), length.max(), width.min(), width.max()], 
-# #            aspect='equal', 
-# #            origin='lower')
-# # two.set_title(f"Mirror Projection {distance} (m) {theta_2} $^\circ$")
-# # two.set_xlabel("Length (m)")
-# # two.set_ylabel("Width (m)")
-
-# # plt.show()
-
-# # for single image
-# # plt.xlabel("Length (m)")
-# # plt.ylabel("Width (m)")
-# # plt.title(f"Mirror Projection with phase adjustment")
-# # plt.imshow(np.log10(np.abs(near)**2), 
-# #            extent=[length.min(), length.max(), width.min(), width.max()], 
-# #            aspect='equal', 
-# #            origin='lower')
-# # plt.show()
-
-# #PRINTING APERTURE LINEAR AND LOG
-
-# # fig, (five, six) = plt.subplots(1,2, figsize = (14,6))
-
-# # img5 = five.imshow(np.abs(near)**2, extent=[length.min(), length.max(), width.min(), width.max()], 
-# #           aspect='equal', 
-# #            origin='lower')
-# # five.set_title(f"Mirror Projection Linear")
-# # fig.colorbar(img5, ax=five, label='Intensity')
-
-# # img6 = six.imshow(np.log10(np.abs(near)**2),extent=[length.min(), length.max(), width.min(), width.max()], 
-# #           aspect='equal', 
-# #            origin='lower')
-# # six.set_title(f"Mirror Projection Log")
-# # fig.colorbar(img6, ax=six, label='Intensity')
-
-# # plt.show()
 
 # I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
-
-# # I_far_1, x_far_1, y_far_1 = fraunhofer(aperture, lamda, window_size, dx, z1,near_1, mirror_coord)
-
-# # I_far_0, x_far_0, y_far_0 = fraunhofer(aperture, lamda, window_size, dx, z1,near_0, mirror_coord)
-
-# # # # # #PRINTING FAR FIELD 
-
-# x_min, x_max = x_far.min(), x_far.max()
-# y_min, y_max = y_far.min(), y_far.max()
-
-# # x_min_1, x_max_1 = x_far_1.min(), x_far_1.max()
-# # y_min_1, y_max_1 = y_far_1.min(), y_far_1.max()
-
-# # x_min_0, x_max_0 = x_far_0.min(), x_far_0.max()
-# # y_min_0, y_max_0 = y_far_0.min(), y_far_0.max()
-# # plot = np.log10(np.abs(I_far)) * np.sign(np.real(I_far))
-# # single image
-# # plot = np.abs(I_far)**2
-# # plt.imshow(np.atan2(np.imag(plot), np.real(plot)), extent=[x_min, x_max, y_min, y_max], origin='lower')
-# # plt.colorbar(label='Intensity')
-# # plt.title('Far-field with tilt phase adjustment')
-# # plt.show()
-
-# ## FIXING
-# # plt.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
-# # plt.colorbar(label='Intensity')
-# # plt.title('Far-field with tilt phase adjustment')
-# # plt.show()
-
-# #subplots (log and linear sidebyside)
-
-# # fig, (three, four) = plt.subplots(1,2, figsize = (14,6))
-
-# # img3 = three.imshow(np.abs(I_far)**2,extent=[x_min, x_max, y_min, y_max], origin='lower')
-# # three.set_title(f"Far-Field diffraction linear")
-# # fig.colorbar(img3, ax=three, label='Intensity')
-
-# # img4 = four.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
-# # four.set_title(f"Far-Field diffraction Log")
-# # fig.colorbar(img4, ax=four, label='Intensity')
-
-# # plt.show()
-
-
-# # #side by side for FFT phase adjustment off mirror (in fresnel)
-# # fig, (three, four, five) = plt.subplots(1,3, figsize = (14,6))
-
-# # img3 = three.imshow(np.log10(np.abs(I_far)**2),extent=[x_min, x_max, y_min, y_max], origin='lower')
-# # three.set_title(f"Phase Adjust of e^(iky)")
-# # # fig.colorbar(img3, ax=three, label='Intensity')
-
-
-# # img5 = five.imshow(np.log10(np.abs(I_far_0)**2),extent=[x_min_0, x_max_0, y_min_0, y_max_0], origin='lower')
-# # five.set_title(f"No Phase Adjustment")
-# # # fig.colorbar(img5, ax=five, label='Intensity')
-
-# # img4 = four.imshow(np.log10(np.abs(I_far_1)**2), extent=[x_min_1, x_max_1, y_min_1, y_max_1], origin='lower')
-# # four.set_title(f"Phase Adjust of e^(iy/wavelength)")
-# # # fig.colorbar(img4, ax=four, label='Intensity')
-
-
-# # plt.tight_layout()
-# # plt.show()
-
-
 
 # #new printing layout six side by side
 # fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
