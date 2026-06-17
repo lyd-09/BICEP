@@ -196,7 +196,7 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
 def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
 
-    #if propagating from aperture vs if propagating from mirror (just change or swap between widths of aperture vs widths of mirror and new_dx, and dk)
+    #if propagating from aperture vs if propagating from mirror (just change or swap between widths(rows) of aperture vs widths of mirror and new_dx, and dk)
     width_aperture = window_size #m
     rows_in_ap = a_grid.shape[0] #complex values
 
@@ -223,7 +223,14 @@ def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
     obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(a_grid)))
     obs_plane_field = c * obs_plane * (new_dx ** 2)
 
-    return obs_plane_field, X2, Y2
+    #to put in angular space
+    theta_x = np.arctan(X2/z1)
+    theta_y = np.arctan(Y2/z1)
+
+    x_deg = np.degrees(theta_x)
+    y_deg = np.degrees(theta_y)
+
+    return obs_plane_field, x_deg, y_deg
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
@@ -251,7 +258,7 @@ fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3
 
 ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
 ap.set_title("Aperture Amplitude")
-ap.set_xlabel("Diameter of Aperture (mm)")
+ap.set_ylabel("Diameter of Aperture (m)")
 
 close1 = close.imshow(np.log10(np.abs(near)**2), 
             extent=[length.min(), length.max(), width.min(), width.max()], 
@@ -264,10 +271,12 @@ close.set_ylabel("Width (m)")
 far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 far.set_title("Far-field Amplitude")
 fig.colorbar(far1, ax=far, label="Intensity")
+far.set_xlabel("Degrees")
+far.set_ylabel("Degrees")
 
 ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
 ap_phase.set_title("Aperture Phase")
-ap_phase.set_xlabel("Diameter of Aperture (mm)")
+ap_phase.set_ylabel("Diameter of Aperture (m)")
 
 close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
             extent=[length.min(), length.max(), width.min(), width.max()], 
@@ -280,6 +289,8 @@ close_phase.set_ylabel("Width (m)")
 far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
 far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
+far_phase.set_xlabel("Degrees")
+far_phase.set_ylabel("Degrees")
 
 plt.tight_layout()
 plt.show()
