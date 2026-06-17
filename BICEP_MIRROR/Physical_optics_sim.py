@@ -196,7 +196,7 @@ def fresnel(aperture,x,y, mirror_data, lamda):
 
 def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
 
-    #if propagating from aperture vs if propagating from mirror (just change or swap between widths(rows) of aperture vs widths of mirror and new_dx, and dk)
+    #if propagating from aperture vs if propagating from mirror (just change or swap between widths(rows) of aperture vs widths of mirror and new_dx, and dk) While also paying attention to obs_coordx and y (y wont be needed for aperture)
     width_aperture = window_size #m
     rows_in_ap = a_grid.shape[0] #complex values
 
@@ -213,15 +213,16 @@ def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
     #setting up variables for FFT far field (obs = observational)
     obs_sidelength = (lamda * z1) / dk
     obs_dx = lamda * z1 / width_mirror
-    obs_coord =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(rows_in_ap))
-    [X2,Y2] = np.meshgrid(obs_coord,obs_coord)
+    obs_coord_x =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(near_grid.shape[1]))
+    obs_coord_y =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(rows_in_mirror))
+    [X2,Y2] = np.meshgrid(obs_coord_x,obs_coord_y)
     
     #complex amplitude scaling factor
     c = 1/(1j*lamda * z1) * np.exp(1j*k/(2*z1) * (X2 ** 2 + Y2 ** 2))
 
     #wave transformation 
-    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(a_grid)))
-    obs_plane_field = c * obs_plane * (new_dx ** 2)
+    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(near_grid)))
+    obs_plane_field = c * obs_plane * (dk ** 2)
 
     #to put in angular space
     theta_x = np.arctan(X2/z1)
