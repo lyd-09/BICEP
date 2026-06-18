@@ -148,7 +148,7 @@ def bilinear_interpolation(mirror_data_1):
 def plot_points(df, meas, min, max, mirror_data, mirrordata,new_mirror_z):
     fig, (one,two) = plt.subplots(1,2, figsize=(14,6))
 
-    im1 = one.pcolormesh(mirror_data,mirrordata,new_mirror_z)
+    im1 = one.pcolormesh(mirror_data,mirrordata,new_mirror_z,vmin=min, vmax=max)
     fig.colorbar(im1, ax=one, label=meas)
 
     one.set_title("Mirror Linear Interpolation and Extrapolation")
