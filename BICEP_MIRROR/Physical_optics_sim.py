@@ -253,10 +253,10 @@ new_mirror_z = bilinear_interpolation(mirror_data_1)
 # plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z[2])
 
 #flat mirror
-near = fresnel(aperture, x, y, mirror_data_1, lamda)
+# near = fresnel(aperture, x, y, mirror_data_1, lamda)
 
 # #for altered mirror states
-# near = fresnel(aperture, x, y , new_mirror_z, lamda)
+near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
 I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
 
