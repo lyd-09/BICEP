@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import pandas as pd
-from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator
 from skimage.registration import phase_cross_correlation
 
 #can also abstract wavenumber to golabal variables
@@ -104,7 +104,7 @@ def bilinear_interpolation(mirror_data_1):
     Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
 
     space = Cold[["X", "Y"]].to_numpy()
-    depth = Cold[["Z (um)"]].to_numpy() #change to mm soon!!!!!!
+    depth = Cold["Z (um)"].to_numpy() #change to mm soon!!!!!!
 
     #coordinate offset shift (because the photo data is defined at different points than the new graph. Zero Zero shifted)
     x_center_error = 0.1   # (-1.4 + 1.6) / 2
@@ -122,11 +122,22 @@ def bilinear_interpolation(mirror_data_1):
     mirror_new = linear_interpolation(mirror_interpolation)
 
     #extrapolation
-    nearest_interpolation = NearestNDInterpolator(space, depth)
-    mirror_new_nearest = nearest_interpolation(mirror_interpolation)
+    # nearest_interpolation = NearestNDInterpolator(space, depth)
+    # mirror_new_nearest = nearest_interpolation(mirror_interpolation)
 
-    #fill the cut-off with nearest data
-    mirror_new = np.where(np.isnan(mirror_new_nearest), mirror_new_nearest, mirror_new_nearest)
+    #testing smooth extrapolation
+    # extrapolation (Calculates the smooth slopes for the background)
+    outside_interp = RBFInterpolator(space, depth, kernel='linear')
+    mirror_new_rbf = outside_interp(mirror_interpolation)
+
+
+
+
+    #fill the cut-off with nearest data (but causes binning....)
+    # mirror_new = np.where(np.isnan(mirror_new_nearest), mirror_new_nearest, mirror_new_nearest)
+    # fill the cut-off smoothly (No more binning!)
+    mirror_new = np.where(np.isnan(mirror_new), mirror_new_rbf, mirror_new)
+
 
     #return new interpolated data points to compare to flat mirror ect
     mirror_mesh_z = mirror_new.reshape(mirror_data_1[0].shape)
@@ -137,12 +148,12 @@ def bilinear_interpolation(mirror_data_1):
 def plot_points(df, meas, min, max, mirror_data, mirrordata,new_mirror_z):
     fig, (one,two) = plt.subplots(1,2, figsize=(14,6))
 
-    im1 = one.contourf(mirror_data,mirrordata,new_mirror_z)
-    fig.colorbar(im1, ax=one, label='Z(um)')
+    im1 = one.pcolormesh(mirror_data,mirrordata,new_mirror_z)
+    fig.colorbar(im1, ax=one, label=meas)
 
     one.set_title("Mirror Linear Interpolation and Extrapolation")
-    one.set_xlabel("X Coord(m)")
-    one.set_ylabel("Y Coord(m)")
+    one.set_xlabel("X (m)")
+    one.set_ylabel("Y (m)")
 
     one.grid(True)
 
@@ -238,61 +249,61 @@ aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
 mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord,lamda)
 
-# new_mirror_z = bilinear_interpolation(mirror_data_1)
+new_mirror_z = bilinear_interpolation(mirror_data_1)
 
-# #mirror plotting
-# Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
-# plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z)
+#mirror plotting
+Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
+plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z)
 
-#im pretty sure this function doesn't exsist anymore
-# m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
+# im pretty sure this function doesn't exsist anymore
+m_grid = mirror_mask(mirror_data, mirror_type='flat',lamda=3e-3, mirror_tilt=False,theta=0)
 
-near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
+# near = fresnel(aperture, x, y, mirror_data_1, lamda)  #might need to change mirror_data to m_grid and see what happens
 
-I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
+# I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
 
-x_min, x_max = x_far.min(), x_far.max()
-y_min, y_max = y_far.min(), y_far.max()
+# x_min, x_max = x_far.min(), x_far.max()
+# y_min, y_max = y_far.min(), y_far.max()
 
-#new printing layout six side by side
-fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
+# #new printing layout six side by side
+# fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
 
-ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
-ap.set_title("Aperture Amplitude")
-ap.set_ylabel("Diameter of Aperture (m)")
+# ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
+# ap.set_title("Aperture Amplitude")
+# ap.set_ylabel("Diameter of Aperture (m)")
 
-close1 = close.imshow(np.log10(np.abs(near)**2), 
-            extent=[length.min(), length.max(), width.min(), width.max()], 
-            aspect='equal', 
-            origin='lower')
-close.set_title("Mirror Projection Amplitude")
-close.set_xlabel("Length (m)")
-close.set_ylabel("Width (m)")
+# close1 = close.imshow(np.log10(np.abs(near)**2), 
+#             extent=[length.min(), length.max(), width.min(), width.max()], 
+#             aspect='equal', 
+#             origin='lower')
+# close.set_title("Mirror Projection Amplitude")
+# close.set_xlabel("Length (m)")
+# close.set_ylabel("Width (m)")
 
-far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
-far.set_title("Far-field Amplitude")
-fig.colorbar(far1, ax=far, label="Intensity")
-far.set_xlabel("Degrees")
-far.set_ylabel("Degrees")
+# far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# far.set_title("Far-field Amplitude")
+# fig.colorbar(far1, ax=far, label="Intensity")
+# far.set_xlabel("Degrees")
+# far.set_ylabel("Degrees")
 
-ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
-ap_phase.set_title("Aperture Phase")
-ap_phase.set_ylabel("Diameter of Aperture (m)")
+# ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
+# ap_phase.set_title("Aperture Phase")
+# ap_phase.set_ylabel("Diameter of Aperture (m)")
 
-close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
-            extent=[length.min(), length.max(), width.min(), width.max()], 
-            aspect='equal', 
-            origin='lower')
-close_phase.set_title("Mirror Projection Phase")
-close_phase.set_xlabel("Length (m)")
-close_phase.set_ylabel("Width (m)")
+# close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
+#             extent=[length.min(), length.max(), width.min(), width.max()], 
+#             aspect='equal', 
+#             origin='lower')
+# close_phase.set_title("Mirror Projection Phase")
+# close_phase.set_xlabel("Length (m)")
+# close_phase.set_ylabel("Width (m)")
 
-far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
-far_phase.set_title("Far-field Phase")
-fig.colorbar(far2, ax=far_phase, label="Intensity")
-far_phase.set_xlabel("Degrees")
-far_phase.set_ylabel("Degrees")
+# far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# far_phase.set_title("Far-field Phase")
+# fig.colorbar(far2, ax=far_phase, label="Intensity")
+# far_phase.set_xlabel("Degrees")
+# far_phase.set_ylabel("Degrees")
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
