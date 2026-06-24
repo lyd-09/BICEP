@@ -202,27 +202,27 @@ def fresnel(aperture,x,y, mirror_data, lamda):
     return near_field   #as reflected ONTO mirror
 
 
-def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
+def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
 
-    #if propagating from aperture vs if propagating from mirror (just change or swap between widths(rows) of aperture vs widths of mirror and new_dx, and dk) While also paying attention to obs_coordx and y (y wont be needed for aperture)
+    #if propagating from aperture vs if propagating from mirror (just change or swap between widths(rows) of aperture vs widths of mirror and new_dx, and dy) While also paying attention to obs_coordx and y (y wont be needed for aperture)
     width_aperture = window_size #m
     rows_in_ap = a_grid.shape[0] #complex values
 
-    #scaling difference for far field (should be the physical width of the source grid/ number of rows in ) !!!!!! global variable? (possibly use 'dk' as in frequency (fft) spatial coords to real space)
+    #scaling difference for far field (should be the physical width of the source grid/ number of rows in ) !!!!!! global variable? (possibly use 'dy' as in frequency (fft) spatial coords to real space)
     new_dx = width_aperture / rows_in_ap
 
-    width_mirror = mirror_coord[1]
+    col_mirror = near_grid.shape[1]
     rows_in_mirror = near_grid.shape[0]
-    dk = width_mirror / rows_in_mirror
-    dx_k = width_mirror / int(near_grid.shape[1])
+    dy = mirror_coord[0] / col_mirror
+    dx = mirror_coord[1] / rows_in_mirror
 
     #wave number
     k = 2 * np.pi / lamda
 
     #setting up variables for FFT far field (obs = observational)
     #spatial freq for x and y 
-    fx = np.fft.fftshift(np.fft.fftfreq(int(near_grid.shape[1]),d=dx_k))
-    fy = np.fft.fftshift(np.fft.fftfreq(int(rows_in_mirror), d = dk))
+    fx = np.fft.fftshift(np.fft.fftfreq(int(near_grid.shape[1]),d=dx))
+    fy = np.fft.fftshift(np.fft.fftfreq(int(rows_in_mirror), d = dy))
     X2, Y2 = np.meshgrid(fx,fy)
 
     #convert to cos
@@ -232,8 +232,8 @@ def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
     x_deg = np.arcsin(alpha) * (180/ np.pi)
     y_deg = np.arcsin(beta) * (180/np.pi)
 
-    # obs_sidelength = (lamda * z1) / dk
-    # obs_dx = lamda * z1 / width_mirror
+    # obs_sidelength = (lamda * z1) / dy
+    # obs_dx = lamda * z1 / col_mirror
     # obs_coord_x =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(near_grid.shape[1]))
     # obs_coord_y =  np.linspace(-obs_sidelength/2, obs_sidelength/2 - obs_dx, int(rows_in_mirror))
     # [X2,Y2] = np.meshgrid(obs_coord_x,obs_coord_y)
@@ -243,7 +243,7 @@ def fraunhofer(a_grid, lamda, window_size, dx, z1, near_grid, mirror_coord):
 
     #wave transformation 
     obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(near_grid)))
-    obs_plane_field = c * obs_plane * (dk ** 2)
+    obs_plane_field = c * obs_plane * (dy ** 2)
 
     # #to put in angular space
     # theta_x = np.arctan(X2/z1)
@@ -271,7 +271,7 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)
 # #for altered mirror states
 # near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
-I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, dx, z1,near, mirror_coord)
+I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, z1,near, mirror_coord)
 
 x_min, x_max = x_far.min(), x_far.max()
 y_min, y_max = y_far.min(), y_far.max()
