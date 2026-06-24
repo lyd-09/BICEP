@@ -185,6 +185,12 @@ To go from this output to an angular deviation, the following equation can be us
 \end{equation*}
 Where z1 is the Far Field propogation distance. This formula yields an angle in radians which can then be converted to degrees for plot interpretation.
 
+When considering the uneven axis on the mirror and how that's handled in the FFT we have to keep in mind the inverse relation with spatial dimensions.
+ \begin{equation*}
+    f_x \propto \frac{1}{\delta x} 
+\end{equation*}
+Since the mirror coordinates are stretched along the x-axis the FFT patern needs to look compressed on the x-axis.
+
 LINE BY LINE:
 
 % Global scaling for FFT:
@@ -230,6 +236,8 @@ Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrume
 % for more reading and on pase shifts:
 
   Goodman, Joseph W. Introduction to Fourier Optics. McGraw-Hill, 1968.
+
+% Non-uniform FFT - https://arxiv.org/abs/1308.6644
 
 
 \end{document}
