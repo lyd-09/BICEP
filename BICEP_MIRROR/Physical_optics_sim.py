@@ -218,28 +218,26 @@ def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
     #padding
     npad = [2048, 2048] 
     f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
-      # 3. Calculate indices to center the original near_grid inside the padded grid
+    #to center
     ix = (f2.shape[0] - near_grid.shape[0]) // 2  # Row offset
     iy = (f2.shape[1] - near_grid.shape[1]) // 2  # Column offset
 
-    # 4. Copy near_grid using the separate row and column dimensions
+    # row and col dim
     f2[ix:ix + near_grid.shape[0], iy:iy + near_grid.shape[1]] = near_grid
 
-
     near_grid = f2
-
     #wave number
     k = 2 * np.pi / lamda
+    #phase ramp tilt
+    phase_shift = np.exp(-1j * k * Y_spatial)
 
+    X_spatial, Y_spatial = np.meshgrid(mirror_coord[0], mirror_coord[1])
 
-    #phase shift encounter
-    phase_shift = 1
-
-    #setting up variables for FFT far field (obs = observational)
-    #spatial freq for x and y 
-    fx = np.fft.fftshift(np.fft.fftfreq(int(near_grid.shape[1]),d=dx))
-    fy = np.fft.fftshift(np.fft.fftfreq(int(near_grid.shape[0]), d = dy))
-    X2, Y2 = np.meshgrid(fx,fy)
+    # #setting up variables for FFT far field (obs = observational)
+    # #spatial freq for x and y 
+    fx = np.fft.fftshift(np.fft.fftfreq(near_grid.shape[1], d=dx))
+    fy = np.fft.fftshift(np.fft.fftfreq(near_grid.shape[0], d=dy))
+    X2, Y2 = np.meshgrid(fx, fy)
 
     #convert to cos
     alpha = X2 * lamda
@@ -248,12 +246,13 @@ def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
     x_deg = np.arcsin(alpha) * (180/ np.pi)
     y_deg = np.arcsin(beta) * (180/np.pi)
     
-    #complex amplitude scaling factor
+    # #complex amplitude scaling factor (quadratic phase factor)
     c = 1/(1j*lamda * z1) * np.exp(1j*k/(2*z1) * (X2 ** 2 + Y2 ** 2))
 
-    #wave transformation 
+    # #wave transformation 
     obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(near_grid * phase_shift)))
-    obs_plane_field = c * obs_plane * (dy ** 2)
+
+    obs_plane_field = c * obs_plane * dx * dy
 
 
     return obs_plane_field, x_deg, y_deg
@@ -295,11 +294,16 @@ close.set_title("Mirror Projection Amplitude")
 close.set_xlabel("Length (m)")
 close.set_ylabel("Width (m)")
 
+#test
+print(x_min, y_min)
+print(x_max, y_max)
 far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
 far.set_title("Far-field Amplitude")
 fig.colorbar(far1, ax=far, label="Intensity")
 far.set_xlabel("Degrees")
 far.set_ylabel("Degrees")
+far.set_xlim(-5,5)
+far.set_ylim(0,12)
 
 ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
 ap_phase.set_title("Aperture Phase")
@@ -318,6 +322,8 @@ far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
 far_phase.set_ylabel("Degrees")
+far_phase.set_xlim(-3,3)
+far_phase.set_ylim(-3,3)
 
 plt.tight_layout()
 plt.show()
