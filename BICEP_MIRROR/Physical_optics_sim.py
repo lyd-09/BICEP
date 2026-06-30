@@ -215,6 +215,21 @@ def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
     dx = mirror_coord[0] / col_mirror
     dy = mirror_coord[1] / rows_in_mirror
 
+    #!!!!!!!!!!!!!
+
+    #create arrays spanning from negative half-width to positive half-width
+    x_pixels = (np.arange(col_mirror) - (col_mirror - 1) / 2) * dx
+    y_pixels = (np.arange(rows_in_mirror) - (rows_in_mirror - 1) / 2) * dy
+
+    x2, y2 = np.meshgrid(x_pixels, y_pixels)
+
+    #rotate around the X-axis by 45 degrees and shift to 3D center
+    z2 = y2 * np.sin(np.pi / 4) + 4000
+    y2 = y2 * np.cos(np.pi / 4) + 0
+    x2 = x2 + 0
+
+    #!!!!!!!!!!
+    
     #padding
     npad = [2048, 2048] 
     f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
@@ -228,10 +243,11 @@ def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
     near_grid = f2
     #wave number
     k = 2 * np.pi / lamda
-    #phase ramp tilt
-    phase_shift = np.exp(-1j * k * Y_spatial)
 
     X_spatial, Y_spatial = np.meshgrid(mirror_coord[0], mirror_coord[1])
+
+    #phase ramp tilt
+    phase_shift = np.exp(-1j * k * Y_spatial)
 
     # #setting up variables for FFT far field (obs = observational)
     # #spatial freq for x and y 
@@ -254,8 +270,10 @@ def fraunhofer(a_grid, lamda, window_size, z1, near_grid, mirror_coord):
 
     obs_plane_field = c * obs_plane * dx * dy
 
+    #!!!!!!
+    uv_width = [np.degrees(0.5 * lamda / (x2[0,1] - x2[0,0])), np.degrees(0.5 * lamda / (y2[1,0] - y2[0,0]))]
 
-    return obs_plane_field, x_deg, y_deg
+    return obs_plane_field, x_deg, y_deg, uv_width
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
@@ -274,10 +292,13 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)
 # #for altered mirror states
 # near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
-I_far, x_far, y_far = fraunhofer(aperture, lamda, window_size, z1,near, mirror_coord)
+I_far, x_far, y_far, uv_width = fraunhofer(aperture, lamda, window_size, z1,near, mirror_coord)
 
-x_min, x_max = x_far.min(), x_far.max()
-y_min, y_max = y_far.min(), y_far.max()
+# x_min, x_max = x_far.min(), x_far.max()
+# y_min, y_max = y_far.min(), y_far.max()
+
+#!!!!!
+
 
 #new printing layout six side by side
 fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
@@ -294,10 +315,7 @@ close.set_title("Mirror Projection Amplitude")
 close.set_xlabel("Length (m)")
 close.set_ylabel("Width (m)")
 
-#test
-print(x_min, y_min)
-print(x_max, y_max)
-far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max], origin='lower')
+far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[-uv_width[0],uv_width[0],-uv_width[1],uv_width[1]], origin='lower')
 far.set_title("Far-field Amplitude")
 fig.colorbar(far1, ax=far, label="Intensity")
 far.set_xlabel("Degrees")
@@ -317,7 +335,7 @@ close_phase.set_title("Mirror Projection Phase")
 close_phase.set_xlabel("Length (m)")
 close_phase.set_ylabel("Width (m)")
 
-far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
+far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[-uv_width[0],uv_width[0],-uv_width[1],uv_width[1]], origin='lower')
 far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
