@@ -20,7 +20,7 @@ window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
 theta_1 =  0 #45 degrees
-lamda = 3e-3 #3mm
+lamda = 2e-3 #3mm
 #mainly for side by side comparisons
 theta_2 = 0
 
@@ -208,7 +208,6 @@ def fresnel(aperture,x,y, mirror_data, lamda):
     
 def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     k = 2 * np.pi / lamda
-    mir_center = [0,0,4]
     rows_in_mirror = near_grid.shape[0]
     col_mirror = near_grid.shape[1]
     dx = mirror_coord[0] / col_mirror
@@ -224,10 +223,6 @@ def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     z_small = Y_mirror * np.sin(np.pi / 4) + 4
     y_small = Y_mirror * np.cos(np.pi / 4) + 0
     x_small = X_mirror + 0
-
-    fraunhoffer_phase_factor = np.exp(1j * k * y_small)
-
-    tilted_near_grid = near_grid * fraunhoffer_phase_factor
 
     #set center for mirror
     
@@ -264,11 +259,31 @@ def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     x_deg = np.arcsin(alpha) * (180/ np.pi)
     y_deg = np.arcsin(beta) * (180/np.pi)
 
-    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(tilted_near_grid)))
+    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(near_grid)))
+
+    fraunhoffer_phase_factor = np.exp(1j * k * y_small)
+
+    #you do have to 'double pad' but the second padding is for the fraunhoffer phase factor;
+    shape = (2048,2048)
+    shape_row = shape[0] - fraunhoffer_phase_factor.shape[0]
+    shape_col = shape[1] - fraunhoffer_phase_factor.shape[1]
+
+    pad_top = shape_row //2
+    pad_bottom = shape_row - pad_top
+    pad_left = shape_col // 2 
+    pad_right = shape_col - pad_left
+
+    padded_phase_factor = np.pad(
+    fraunhoffer_phase_factor, 
+    ((pad_top, pad_bottom), (pad_left, pad_right)), 
+    mode='constant', 
+    constant_values=0)
+
+    tilted_near_grid = obs_plane * padded_phase_factor
 
     uv_width = [np.degrees(0.5 * lamda / (X2[0,1] - X2[0,0])), np.degrees(0.5 * lamda / (Y2[1,0] - Y2[0,0]))]
 
-    return obs_plane, uv_width, x_deg, y_deg
+    return tilted_near_grid, uv_width, x_deg, y_deg
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
