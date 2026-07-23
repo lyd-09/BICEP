@@ -208,33 +208,34 @@ def fresnel(aperture,x,y, mirror_data, lamda):
     
 def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     k = 2 * np.pi / lamda
+
+
     rows_in_mirror = near_grid.shape[0]
     col_mirror = near_grid.shape[1]
     dx = mirror_coord[0] / col_mirror
     dy = mirror_coord[1] / rows_in_mirror
     
-    #create mesh grid for the mirror in fraunhoffer equation !!! (redundant?)
+    #create mesh grid for the mirror in this function (centered at 00)
     y_mir_index = np.arange(rows_in_mirror) - (rows_in_mirror //2)
     x_mir_index = np.arange(col_mirror) - (col_mirror //2)
 
     X_mirror, Y_mirror = np.meshgrid(x_mir_index, y_mir_index)
 
-    #45 shift for small portion
+    #45 shift for unpadded (????)
     z_small = Y_mirror * np.sin(np.pi / 4) + 4
     y_small = Y_mirror * np.cos(np.pi / 4) + 0
     x_small = X_mirror + 0
 
     #set center for mirror
     
-    padded_center = 1024
+    padded_center = 512
 
-    #starting spots. shape (360,540)
+    #starting spots for each side of the mirror. shape (360,540)
     row_start = padded_center - (360 //2)
     col_start = padded_center - (540//2)
 
-    #creating the mirror s
-      #padding
-    npad = [2048, 2048] 
+    #creating the mirror padding
+    npad = [1024, 1024] 
     f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
     # #to center (accounting for offset)
     # ix = (f2.shape[0] - near_grid.shape[0]) // 2  # Row offset
@@ -264,7 +265,7 @@ def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     fraunhoffer_phase_factor = np.exp(1j * k * y_small)
 
     #you do have to 'double pad' but the second padding is for the fraunhoffer phase factor;
-    shape = (2048,2048)
+    shape = (1024,1024)
     shape_row = shape[0] - fraunhoffer_phase_factor.shape[0]
     shape_col = shape[1] - fraunhoffer_phase_factor.shape[1]
 
@@ -275,9 +276,7 @@ def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
 
     padded_phase_factor = np.pad(
     fraunhoffer_phase_factor, 
-    ((pad_top, pad_bottom), (pad_left, pad_right)), 
-    mode='constant', 
-    constant_values=0)
+    ((pad_top, pad_bottom), (pad_left, pad_right)))
 
     tilted_near_grid = obs_plane * padded_phase_factor
 
@@ -324,7 +323,7 @@ close.set_title("Mirror Projection Amplitude")
 close.set_xlabel("Length (m)")
 close.set_ylabel("Width (m)")
 
-far1 = far.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max])
+far1 = far.imshow(np.log10(np.abs(I_far)**2) , extent=[x_min, x_max, y_min, y_max])
 far.set_title("Far-field Amplitude")
 fig.colorbar(far1, ax=far, label="Intensity")
 far.set_xlabel("Degrees")
