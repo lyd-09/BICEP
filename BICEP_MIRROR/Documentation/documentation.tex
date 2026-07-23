@@ -191,9 +191,13 @@ When considering the uneven axis on the mirror and how that's handled in the FFT
 \end{equation*}
 Since the mirror coordinates are stretched along the x-axis the FFT patern needs to look compressed on the x-axis.
 
-Hygens principle for explination of variable c
-LINE BY LINE:
+Hygens principle for explination of variable c 
+FOURIER SHIFT THEROEM:
 
+When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
+ \begin{equation*}
+    \Delta_{f_x} =  \frac{\sin(\theta_{tilt})}{\lambda} 
+\end{equation*}
 % Global scaling for FFT:
 % \begin{equation*}
 %     \Delta f_x = \frac{1}{N \cdot \Delta x}

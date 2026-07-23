@@ -19,7 +19,7 @@ radius = .25 #500 mm across!! (.25) aperture
 window_size = (radius * 2)
 dx = window_size/N
 edge_taper = 0.01 #gaussian
-theta_1 =  0 #45 degrees
+theta_1 =  45 #45 degrees
 lamda = 2e-3 #3mm
 #mainly for side by side comparisons
 theta_2 = 0
@@ -343,7 +343,7 @@ close_phase.set_title("Mirror Projection Phase")
 close_phase.set_xlabel("Length (m)")
 close_phase.set_ylabel("Width (m)")
 
-far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[-uv_width[0],uv_width[0],-uv_width[1],uv_width[1]], origin='lower')
+far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
 far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
