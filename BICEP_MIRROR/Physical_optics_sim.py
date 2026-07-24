@@ -25,9 +25,6 @@ lamda = 2e-3 #3mm
 theta_2 = 0
 
 
-#frame_size = [50,50]
-
-
 mirror_coord = np.array([2.7,1.8,4]) #m 
 #but i might be having to use mm.....
 # mirror_coord = np.array([2700, 1800, 4000]) #mm
@@ -206,7 +203,7 @@ def fresnel(aperture,x,y, mirror_data, lamda):
             
     return near_field   #as reflected ONTO mirror
     
-def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
+def fraunhofer(theta, lamda, window_size, z1, near_grid, mirror_coord):
     k = 2 * np.pi / lamda
 
 
@@ -214,75 +211,38 @@ def fraunhofer(lamda, window_size, z1, near_grid, mirror_coord):
     col_mirror = near_grid.shape[1]
     dx = mirror_coord[0] / col_mirror
     dy = mirror_coord[1] / rows_in_mirror
-    
-    #create mesh grid for the mirror in this function (centered at 00)
-    y_mir_index = np.arange(rows_in_mirror) - (rows_in_mirror //2)
-    x_mir_index = np.arange(col_mirror) - (col_mirror //2)
 
-    X_mirror, Y_mirror = np.meshgrid(x_mir_index, y_mir_index)
+# mesh of near_grid (360, 540) # Ny = 360, Nx = 540
+    Ny, Nx = near_grid.shape 
+    y_vec = np.arange(-Ny//2, Ny//2) * dy
+    x_vec = np.arange(-Nx//2, Nx//2) * dx
+    X_mesh, Y_mesh = np.meshgrid(x_vec, y_vec)
 
-    #45 shift for unpadded (????)
-    z_small = Y_mirror * np.sin(np.pi / 4) + 4
-    y_small = Y_mirror * np.cos(np.pi / 4) + 0
-    x_small = X_mirror + 0
+    # demodulate using the Y of the near field
+    k = (2 * np.pi) / lamda
+    fraunhoffer_phase_factor = np.exp(-1j * k * Y_mesh * np.sin(np.radians(theta)))
+    demodulated_grid = near_grid * fraunhoffer_phase_factor
 
-    #set center for mirror
-    
-    padded_center = 512
-
-    #starting spots for each side of the mirror. shape (360,540)
-    row_start = padded_center - (360 //2)
-    col_start = padded_center - (540//2)
-
-    #creating the mirror padding
+    #padding
     npad = [1024, 1024] 
     f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
-    # #to center (accounting for offset)
-    # ix = (f2.shape[0] - near_grid.shape[0]) // 2  # Row offset
-    # iy = (f2.shape[1] - near_grid.shape[1]) // 2  # Column offset
-    
-    # row and col dim (!!!!!might switch iy and ix)
-    f2[row_start : row_start + 360, col_start : col_start + 540] = near_grid
 
-    near_grid = f2
+    padded_center = 512
+    row_start = padded_center - (Ny // 2)
+    col_start = padded_center - (Nx // 2)
 
-      # #setting up variables for FFT far field (obs = observational)
-    # #spatial freq for x and y 
-    fx = np.fft.fftshift(np.fft.fftfreq(near_grid.shape[1], d=dx))
-    fy = np.fft.fftshift(np.fft.fftfreq(near_grid.shape[0], d=dy))
+    f2[row_start : row_start + Ny, col_start : col_start + Nx] = demodulated_grid
+
+    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(f2)))
+
+    fx = np.fft.fftshift(np.fft.fftfreq(npad[1], d=dx))
+    fy = np.fft.fftshift(np.fft.fftfreq(npad[0], d=dy))
     X2, Y2 = np.meshgrid(fx, fy)
 
-    #convert to cos
-    alpha = X2 * lamda
-    beta = Y2 * lamda
+    x_limit_deg = np.degrees(0.5 * lamda / dx)
+    y_limit_deg = np.degrees(0.5 * lamda / dy)
 
-    #for plotting fft in degrees from center
-    x_deg = np.arcsin(alpha) * (180/ np.pi)
-    y_deg = np.arcsin(beta) * (180/np.pi)
-
-    obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(near_grid)))
-
-    fraunhoffer_phase_factor = np.exp(1j * k * y_small)
-
-    #you do have to 'double pad' but the second padding is for the fraunhoffer phase factor;
-    shape = (1024,1024)
-    shape_row = shape[0] - fraunhoffer_phase_factor.shape[0]
-    shape_col = shape[1] - fraunhoffer_phase_factor.shape[1]
-
-    pad_top = shape_row //2
-    pad_bottom = shape_row - pad_top
-    pad_left = shape_col // 2 
-    pad_right = shape_col - pad_left
-
-    padded_phase_factor = np.pad(
-    fraunhoffer_phase_factor, 
-    ((pad_top, pad_bottom), (pad_left, pad_right)))
-
-    tilted_near_grid = obs_plane * padded_phase_factor
-
-    uv_width = [np.degrees(0.5 * lamda / (X2[0,1] - X2[0,0])), np.degrees(0.5 * lamda / (Y2[1,0] - Y2[0,0]))]
-
-    return tilted_near_grid, uv_width, x_deg, y_deg
+    return obs_plane, x_limit_deg, y_limit_deg
 
 
 aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
@@ -302,10 +262,10 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)
 # #for altered mirror states
 # near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
-I_far, uv_width, x_degree, y_degree = fraunhofer(lamda, window_size, z1,near, mirror_coord)
+I_far, x_degree, y_degree = fraunhofer(theta_1,lamda, window_size, z1,near, mirror_coord)
 
-x_min, x_max = x_degree.min(), x_degree.max()
-y_min, y_max = y_degree.min(), y_degree.max()
+x_min, x_max = -x_degree, x_degree
+y_min, y_max = -y_degree, y_degree
 
 
 #new printing layout six side by side
@@ -348,8 +308,8 @@ far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
 far_phase.set_ylabel("Degrees")
-far_phase.set_xlim(-3,3)
-far_phase.set_ylim(-3,3)
+# far_phase.set_xlim(-3,3)
+# far_phase.set_ylim(-3,3)
 
 plt.tight_layout()
 plt.show()
