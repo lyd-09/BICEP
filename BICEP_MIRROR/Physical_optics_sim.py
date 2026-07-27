@@ -264,8 +264,12 @@ near = fresnel(aperture, x, y, mirror_data_1, lamda)
 
 I_far, x_degree, y_degree = fraunhofer(theta_1,lamda, window_size, z1,near, mirror_coord)
 
+
+#unofficial y axis adjustment 
 x_min, x_max = -x_degree, x_degree
-y_min, y_max = -y_degree, y_degree
+y_min, y_max = -y_degree * (2 ** 0.5), y_degree * (2 ** 0.5)
+
+# I_far = I_far * (2 ** 0.5) #didn't do anything
 
 
 #new printing layout six side by side
