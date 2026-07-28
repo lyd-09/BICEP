@@ -52,9 +52,11 @@ def ap_grid(N, dx,radius, edge_taper, phase_gradient):
 
     #Beam Steering
     k = 2 * np.pi / lamda 
-    #parameters
-    alpha_steer = np.radians(0) #(forwar/backwar tilt)
+    #parameters !!!!!!!!!!!!! abstract for better flow
+    #direction
     theta_steer = np.radians(0) #roation of that tilt to steer in different quadrants
+    #by how much
+    alpha_steer = np.radians(-5) #(forwar/backwar tilt)
 
     tilt_phase = k * (x * np.cos(theta_steer) + y * np.sin(theta_steer)) * np.tan(alpha_steer)
     steered_aperture = aperture * np.exp(1j * tilt_phase)
@@ -312,8 +314,8 @@ far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
 far_phase.set_ylabel("Degrees")
-# far_phase.set_xlim(-3,3)
-# far_phase.set_ylim(-3,3)
+far_phase.set_xlim(-3,3)
+far_phase.set_ylim(-3,3)
 
 plt.tight_layout()
 plt.show()

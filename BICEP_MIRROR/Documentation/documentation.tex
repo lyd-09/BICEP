@@ -133,6 +133,22 @@ BEAM STEERING
 
 In order to steer the beam source two different angles must be defined. Here, there is a tilt angle ($$\alpha$$) and a rotation angle ($$\theta$$) on the x-axis. (insert ref)
 
+alpha steer is the tilt angle. This describes the angle the beam makes in the z direction.
+
+theta steer is the azamuth angle, which is the xy direction that the beam is leaning in. 
+
+spactial frequencies and slope can then be defined using trigonometry. 
+
+When both angles are zero, the tilt phase is zero, meaning that the beam is pointing straight ahead. 
+
+If you want to steer along the x or the y axis (right or left) the theta steer angle can be changed to achieve this. 
+
+For example, when wanting to move along the x axis theta should remain at zero and the amount you'd like to travel along the x axis can be changed using alpha steer.
+
+For the y axis direction, change theta steer to 90 degrees and then use the alpha steer to determine how far from center along the y axis you'd like to steer. 
+
+This method can then be applied to different scenarios to achieve different directional steering. 
+
 \section*{\centering{\textbf{Mirror Creation}}}
 The mirror function creates new coordinates that can be used for the fresnel calculation.
 It also implements beam steering (theta) for tilt adjustments of the beam.
@@ -194,7 +210,25 @@ Since the mirror coordinates are stretched along the x-axis the FFT patern needs
 Hygens principle for explination of variable c 
 FOURIER SHIFT THEROEM:
 
-Have to try beam tracking, to find out where the fft is projecting to, and then center the frame around that. 
+Have to try beam tracking, to find out where the fft is projecting to, and then center the frame around that.
+
+FIXING THE RADICAL TWO Y AXIS COMPRESSION
+
+Optical propogation law:
+\begin{equation}
+    Delta_{x out} = \frac{\lambda_z}{L_x}
+\end{equation}
+
+Where $L_x$ is equal to $N_x$ times $\Delta_{x in}$.
+
+\begin{equation}
+    \Delta_{y out} = \frac{\lambda_z}{L_y}
+\end{equation}
+
+Where $L_y$ is equal to $N_y$ times $\Delta_{y in}$.
+
+When the intermediate aperture of the near field mirror is used, the FFT calculation compresses the image in the y axis direction. This can be adjusted in the plotting steps when the y max and mins are calculated for the FFT plot. An adjustment factor of root two can help to recenter the image. 
+
 %didnt work
 % When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
 %  \begin{equation*}
