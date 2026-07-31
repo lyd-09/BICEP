@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import time 
+from numba import njit
+from tqdm import tqdm
 import math
 import pandas as pd
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator
@@ -9,7 +12,7 @@ from skimage.registration import phase_cross_correlation
 
 #aperture
 #change to [nXm] resolution
-N = 100 #ideally(400)
+N = 120 #ideally(400)
 #[] dimensions
 radius = .25 #500 mm across!! (.25) aperture
 
@@ -38,31 +41,32 @@ phase_gradient = 1
 def ap_grid(N, dx,radius, edge_taper, phase_gradient):
     coords = (np.arange(N) - (N/2)) * dx
     x, y = np.meshgrid(coords, coords)
-    z = 0
 
-    aperture = np.zeros(shape=(N,N), dtype=complex)
+    # aperture calc
     r = np.sqrt(x**2 + y**2)
-
-    #edge taper
-    alpha = -np.log(edge_taper)/radius**2
-
-    #Creates circular aperture
     inside = r < radius
-    aperture[inside] = np.exp(-alpha * r[inside] ** 2)
 
-    #Beam Steering
+    # calc 2d edge taper
+    alpha = -np.log(edge_taper) / radius**2
+    amplitude_profile = np.exp(-alpha * r**2)
+
+    # beam steering across whole grid
     k = 2 * np.pi / lamda 
-    #parameters !!!!!!!!!!!!! abstract for better flow
-    #direction
-    theta_steer = np.radians(0) #roation of that tilt to steer in different quadrants
-    #by how much
-    alpha_steer = np.radians(-5) #(forwar/backwar tilt)
+    theta_steer = np.radians(0) # rotation angle into different quadrants
+    alpha_steer = np.radians(5) # forward/backward tilt
 
+    # tilt phase calculation for whole grid
     tilt_phase = k * (x * np.cos(theta_steer) + y * np.sin(theta_steer)) * np.tan(alpha_steer)
-    steered_aperture = aperture * np.exp(1j * tilt_phase)
+    adjustment = np.exp(1j * tilt_phase)
 
-    return steered_aperture, x, y, z #check output for complex output with xyz values
+    full_steered_field = amplitude_profile * adjustment
 
+    # aperture boundary
+    aperture = np.zeros(shape=(N,N), dtype=complex)
+    aperture[inside] = full_steered_field[inside]
+
+
+    return aperture, x, y
 
 def mirror(N, dx, theta, mirror_coord,lamda):
     k = 2* np.pi / lamda
@@ -80,18 +84,10 @@ def mirror(N, dx, theta, mirror_coord,lamda):
 
     x_grid, y_grid = np.meshgrid(length_axis, width_axis)
 
-
     #apply tilt coordinates forward along the x-axis
     X_tilt = x_grid
     Y_tilt = y_grid * np.cos(np.radians(theta))
     Z_tilt = distance + y_grid * np.sin(np.radians(theta))
-
-    #phase adjustment for mirror reflection at an angle (possible error)
-    # phase_tilt_adjustment = np.exp(1j*Y_tilt*k)
-
-    # x_reflect = X_tilt * phase_tilt_adjustment
-    # y_reflect = Y_tilt * phase_tilt_adjustment
-    # z_reflect = Z_tilt * phase_tilt_adjustment
 
     return [X_tilt, Y_tilt, Z_tilt], length_axis, width_axis, distance
 
@@ -129,14 +125,11 @@ def bilinear_interpolation(mirror_data_1):
     # nearest_interpolation = NearestNDInterpolator(space, depth)
     # mirror_new_nearest = nearest_interpolation(mirror_interpolation)
 
-    #testing smooth extrapolation
     # extrapolation (Calculates the smooth slopes for the background)
     outside_interp = RBFInterpolator(space, depth, kernel='linear')
     mirror_new_rbf = outside_interp(mirror_interpolation)
 
-    #fill the cut-off with nearest data (but causes binning....)
-    # mirror_new = np.where(np.isnan(mirror_new_nearest), mirror_new_nearest, mirror_new_nearest)
-    # fill the cut-off smoothly (No more binning!)
+    # fill the cut-off smoothly
     mirror_new = np.where(np.isnan(mirror_new), mirror_new_rbf, mirror_new)
 
 
@@ -176,32 +169,22 @@ def fresnel(aperture,x,y, mirror_data, lamda):
     #angular spatial frequency (optical wave number)
     k = 2 * np.pi / lamda
 
-    #from mirror (slicing for scaling)
-    t_x_1d = mirror_data[0][0, :]
-    t_y_1d = mirror_data[1][:, 0] 
-    t_x, t_y = np.meshgrid(t_x_1d, t_y_1d) #puts into a 100 by 100 2d shape
+    #rows, cols = t_x.shape[0], t_x.shape[1]
+    rows, cols = mirror_data[0].shape[0], mirror_data[0].shape[1]
 
-    rows, cols = t_x.shape[0], t_x.shape[1]
-    
     # (Rows Cols)
     near_field = np.zeros((rows, cols), dtype=complex)
 
-
-    for j in range(rows):     
+    for j in tqdm(range(rows)):     
         for i in range(cols): 
-            obs_x = t_x[j,i]
-            obs_y = t_y[j,i]
-
+            obs_x = mirror_data[0][j,i]
+            obs_y = mirror_data[1][j,i]
             obs_dist = mirror_data[2][j,i]
 
             d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
             near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
 
-            #for complex number multiplication to occur
-            # phase_tilt_adjustment = np.exp(1j*obs_y*k)
-            # point = near_field[j, i]
-            # #adjustment for mirror reflection
-            # near_field[j, i] = point * phase_tilt_adjustment
+
             
     return near_field   #as reflected ONTO mirror
     
@@ -247,7 +230,7 @@ def fraunhofer(theta, lamda, window_size, z1, near_grid, mirror_coord):
     return obs_plane, x_limit_deg, y_limit_deg
 
 
-aperture, x, y, z = ap_grid(N, dx,radius, edge_taper, phase_gradient)
+aperture, x, y= ap_grid(N, dx,radius, edge_taper, phase_gradient)
 
 mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord,lamda)
 
@@ -258,6 +241,8 @@ mirror_data_1, length, width, distance = mirror(N, dx, theta_1, mirror_coord,lam
 # Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
 # plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z[2])
 
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #flat mirror
 near = fresnel(aperture, x, y, mirror_data_1, lamda)
 
@@ -269,7 +254,16 @@ I_far, x_degree, y_degree = fraunhofer(theta_1,lamda, window_size, z1,near, mirr
 
 #unofficial y axis adjustment 
 x_min, x_max = -x_degree, x_degree
-y_min, y_max = -y_degree * (2 ** 0.5), y_degree * (2 ** 0.5)
+
+if theta_1 == 45:
+
+    y_min, y_max = -y_degree * (2 ** 0.5), y_degree * (2 ** 0.5)
+
+else:
+
+    y_min, y_max = -y_degree, y_degree
+
+
 
 # I_far = I_far * (2 ** 0.5) #didn't do anything
 
@@ -289,13 +283,13 @@ close.set_title("Mirror Projection Amplitude")
 close.set_xlabel("Length (m)")
 close.set_ylabel("Width (m)")
 
-far1 = far.imshow(np.log10(np.abs(I_far)**2) , extent=[x_min, x_max, y_min, y_max])
+far1 = far.imshow((np.log10(np.abs(I_far)**2)) , extent=[x_min, x_max, y_min, y_max])
 far.set_title("Far-field Amplitude")
 fig.colorbar(far1, ax=far, label="Intensity")
 far.set_xlabel("Degrees")
 far.set_ylabel("Degrees")
-far.set_xlim(-3,3)
-far.set_ylim(-3,3)
+# far.set_xlim(-3,3)
+# far.set_ylim(-3,3)
 
 ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
 ap_phase.set_title("Aperture Phase")
@@ -314,9 +308,8 @@ far_phase.set_title("Far-field Phase")
 fig.colorbar(far2, ax=far_phase, label="Intensity")
 far_phase.set_xlabel("Degrees")
 far_phase.set_ylabel("Degrees")
-far_phase.set_xlim(-3,3)
-far_phase.set_ylim(-3,3)
+# far_phase.set_xlim(-3,3)
+# far_phase.set_ylim(-3,3)
 
 plt.tight_layout()
 plt.show()
-
