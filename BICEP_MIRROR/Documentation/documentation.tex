@@ -75,7 +75,7 @@
 \large
 \text{Lydia James}\\[2mm]
 }
-\date{May, 26th 2026}
+\date{July, 31st 2026}
 
 
 
@@ -85,7 +85,7 @@
 
 %\begin{multicols*}{2}
 \section*{\centering{\textbf{Purpose}}}
-This code implements fresnel and fraunhofer diffraction techniques, as well as beam steering to accurately incorporate all aspects of the BICEP Array calibration process. Replicating this process can allow us to compare the data from the telescope beam maps to the simulation and ultimatly finding a quantitative assessment of how the mirror non-flatness might be affecting areas of the beam maps. 
+This code implements fresnel and fraunhofer diffraction techniques as well as beam steering to accurately incorporate all aspects of the BICEP Array calibration process. Replicating this process can allow us to compare the data from the telescope beam maps to the simulations maps. Ultimatly finding a quantitative assessment of how the mirror non-flatness might be affecting areas of the beam maps. 
 
 \subsection*{\centering{\textbf{Global Variables}}}
 Global variables allow for customazation of the simulation. The variables are as follows:
@@ -105,6 +105,7 @@ Global variables allow for customazation of the simulation. The variables are as
             window size & Size of the grid used in Fresnel diffraction \\
             phase gradient & . \\
             z far & Far-field distance in () \\
+            k & wavenumber\\
         \hline
         \end{tabular}
     \end{center}
@@ -126,7 +127,7 @@ The dx remains the same for the aperture function and the fresnel function, sinc
 
 The coordinate array is centered at zero and a gaussian taper is applied to replicate the illumination of the aperture in experimental values.
 
-BEAM STEERING 
+Beam steering teqniques are also applied during this step using a tilt phase calculation for the whole grid. This calculation can be seen below.
 \begin{equation*}
     \phi = k(xcos(theta) + ysin(theta))tan(\alpha)
 \end{equation*}
@@ -143,39 +144,46 @@ When both angles are zero, the tilt phase is zero, meaning that the beam is poin
 
 If you want to steer along the x or the y axis (right or left) the theta steer angle can be changed to achieve this. 
 
-For example, when wanting to move along the x axis theta should remain at zero and the amount you'd like to travel along the x axis can be changed using alpha steer.
+This method can then be applied to different scenarios to achieve different directional steering.
 
-For the y axis direction, change theta steer to 90 degrees and then use the alpha steer to determine how far from center along the y axis you'd like to steer. 
-
-This method can then be applied to different scenarios to achieve different directional steering. 
+Lastly, an adjustment is applied to ensure that the physics remains accurate.
+\begin{equation}
+    \exp(1i * tilt_phase)
+\end{equation}
+(insert ref)
 
 \section*{\centering{\textbf{Mirror Creation}}}
-The mirror function creates new coordinates that can be used for the fresnel calculation.
-It also implements beam steering (theta) for tilt adjustments of the beam.
+The mirror function creates new coordinates that can be used for the fresnel calculation and later on in the fraunhofer calculation.
+
+Since the mirror is non uniform, this fucntion helps to ensure that the fft used in the fraunhofer far field calculation is still accurate. This is where the lengths and widths of the codes are used to calculate a center for the mirror, along with ensuring that the dx or physical grid spacing is still accurate in both the x and y directions since one side will be longer than the other.
+
+This function also focuses on applying the tilted coordinates forward along the y axis. 
+
 
 DISTORTION:
+When considering the non-flatness of the mirror, data points were used from (insert reference). I was able to reference code that was used in another paper (reference) to load in the photogrametry data points and bilinearly interpolate them into a digital representation. This representation can then be swapped into the simulation to replicate the actual mirror used in the calibration process.
 
 
 \section*{\centering{\textbf{Fresnel Diffraction}}}
 This function uses fresnel teqniques as found in (ref Optical physics third edition) to calculated the diffraction pattern from the aperture onto the mirror. 
-Rather than using an FFT here, a for loop is utilized with the diffraction by Huygen's principle:
+Rather than using an FFT here, a double for loop is utilized with the diffraction by Huygen's principle:
 \begin{equation*}
     E(x',y') = \iint A(x,y) \frac{e^{ikd}}{d} dx dy 
 \end{equation*}
-The for loop ensures that the Fresnel diffraction teqnique is preserved and accurate in the near field. 
+This ensures that the actual math for the Fresnel diffraction is preserved and accurate in the near field, rather than approximating it with FFT teqniques. 
 
 This function also accounts for the complex phase shift that is created from the tilted mirror 
 
 % also known as rayleigh - sommerfeld/fresnel integral
 
 
-ACCOMODATING THE ANGLED REFLECTION:
-(multiply by -1 terminology)
-Since the Fraunhofer calculation is simulated as it reflects off the mirror at a 45 degree angle, the Near field output needs to be multiplied by -1 to account for this change in direction. 
-According to Euler's formula, we can multiply the following phase shift by the produced output to achieve this effect.
- \begin{equation*}
-    e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
-\end{equation*}
+% ACCOMODATING THE ANGLED REFLECTION:
+% (multiply by -1 terminology)
+% Since the Fraunhofer calculation is simulated as it reflects off the mirror at a 45 degree angle, the Near field output needs to be multiplied by -1 to account for this change in direction. 
+% According to Euler's formula, we can multiply the following phase shift by the produced output to achieve this effect.
+%  \begin{equation*}
+%     e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
+% \end{equation*}
 
 
 
