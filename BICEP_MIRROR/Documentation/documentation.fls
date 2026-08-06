@@ -279,6 +279,8 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\sansmathfont
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\sansmathfonts\cmssbsy5.tfm
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecss0800.tfm
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecsx0800.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecss0700.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecss0500.tfm
 INPUT C:\Users\lj350\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\cm-super\cm-super-t1.enc
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\vf\public\sansmathfonts\cmsmf10.vf
@@ -316,3 +318,5 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\s
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfsx1200.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfsx1728.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\cm-super\sfsx1728.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\ssmsbm10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\ssmsbm10.pfb

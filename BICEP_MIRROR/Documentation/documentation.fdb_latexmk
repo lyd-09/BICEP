@@ -1,9 +1,11 @@
 # Fdb version 4
-["pdflatex"] 1785527227.88713 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1785527230.29742 0
+["pdflatex"] 1785959536.71788 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1785959539.95092 0
   "C:/Users/lj350/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1781633510 507577 3d7556b69ef2c770f24eb5a394645d0f ""
   "C:/Users/lj350/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1758407254 13257343 a244d020d8275d22801b144b411f6c93 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1001775420 2971 def0b6c1f0b107b3b936def894055589 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecrm1000.tfm" 993062122 3148 7e594c8240c71e432203f65ab5f95a51 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecss0500.tfm" 993062228 3196 ae5f76392f6766d54eeb6f4cbe91c188 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecss0700.tfm" 993062230 3188 e56cd4d6a3861b4e7c009fe0e0677f13 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecss0800.tfm" 993062232 3132 210522a5f285ef2b785f82479c3624db ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecss1000.tfm" 993062234 3140 7eb06dfefee71119860002af13820d26 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/tfm/jknappen/ec/ecss1200.tfm" 993062236 3176 f34de6d605be5cc6bf472e93240318a5 ""
@@ -63,6 +65,7 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb" 1729261307 36108 800de5e25b143f7a45fb7671a91723da ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb" 1729261307 42737 641adf4048036b5c44a002e2577631c6 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb" 1729261307 43631 34edee2c77cf8a80d1b6f503fc415b11 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/ssmsbm10.pfb" 1729261307 52315 e16020be156f40b9054185492611d15c ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/vf/public/sansmathfonts/cmsmf10.vf" 1729261307 836 9084b0cf760a8de48745947ae9205757 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/vf/public/sansmathfonts/cmsmf8.vf" 1729261307 832 a93725828329002d77e98fca09b39ed2 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
@@ -157,10 +160,10 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "TS1cmsmf.fd" 0 -1 0 ""
   "TS1xcmss.fd" 0 -1 0 ""
-  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1785527226 12207 89aecba37ed7c2e4430892b234cdceb3 ""
-  "documentation.aux" 1785527229 416 e21efb3120ad0076bb5823215897fd0c "pdflatex"
-  "documentation.out" 1785527229 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "documentation.tex" 1785527226 12207 89aecba37ed7c2e4430892b234cdceb3 ""
+  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1785959538 12742 ad9b76f42c551c3bf56c8e7b6bfadc67 ""
+  "documentation.aux" 1785959539 416 e21efb3120ad0076bb5823215897fd0c "pdflatex"
+  "documentation.out" 1785959538 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "documentation.tex" 1785959538 12742 ad9b76f42c551c3bf56c8e7b6bfadc67 ""
   (generated)
   "documentation.aux"
   "documentation.log"

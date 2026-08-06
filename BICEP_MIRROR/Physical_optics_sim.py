@@ -1,18 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import time 
-from numba import njit
 from tqdm import tqdm
 import math
+from numba import njit, prange
 import pandas as pd
-from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator
+from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator, CloughTocher2DInterpolator
 from skimage.registration import phase_cross_correlation
 
 #can also abstract wavenumber to golabal variables
 
 #aperture
 #change to [nXm] resolution
-N = 130 #ideally(400)
+N = 125 #ideally(400)nope ideally (125)
 #[] dimensions
 radius = .25 #500 mm across!! (.25) aperture
 
@@ -53,7 +53,7 @@ def ap_grid(N, dx, k, radius, edge_taper, phase_gradient):
 
     # beam steering across whole grid
     theta_steer = np.radians(0) # rotation angle into different quadrants
-    alpha_steer = np.radians(5) # forward/backward tilt
+    alpha_steer = np.radians(0) # forward/backward tilt
 
     # tilt phase calculation for whole grid
     tilt_phase = k * (x * np.cos(theta_steer) + y * np.sin(theta_steer)) * np.tan(alpha_steer)
@@ -95,7 +95,7 @@ def load_points(filename):
     df = pd.read_csv(filename, header=2)
     df = df.rename(columns={"X (project units)": "X", "Y (project units)": "Y", "Z (project units)": "Z (um)", "Z Precision": "Z Precision (um)"})
     df = df[df.Id>12]
-    df[['Z (um)','Z Precision (um)']] = df[['Z (um)','Z Precision (um)']]*1000000
+    # df[['Z (um)','Z Precision (um)']] = df[['Z (um)','Z Precision (um)']]*1000000
     return df
 
 def bilinear_interpolation(mirror_data_1):
@@ -135,7 +135,9 @@ def bilinear_interpolation(mirror_data_1):
     #return new interpolated data points to compare to flat mirror ect
     mirror_mesh_z = mirror_new.reshape(mirror_data_1[0].shape)
 
-    return [mirror_data_1[0], mirror_data_1[1], mirror_mesh_z]
+    total_mirror_z_meters =  mirror_mesh_z
+
+    return [mirror_data_1[0], mirror_data_1[1], total_mirror_z_meters]
 
 #slightly edited from sourced code(used for side by side comparison)
 def plot_points(df, meas, min, max, mirror_data, mirrordata,new_mirror_z):
@@ -164,16 +166,13 @@ def plot_points(df, meas, min, max, mirror_data, mirrordata,new_mirror_z):
     
     plt.show()
 
-@njit
 def fresnel(aperture,x,y, mirror_data, k):
-
-    #rows, cols = t_x.shape[0], t_x.shape[1]
     rows, cols = mirror_data[0].shape[0], mirror_data[0].shape[1]
 
     # (Rows Cols)
     near_field = np.zeros((rows, cols), dtype=np.complex128)
 
-    for j in range(rows):     
+    for j in tqdm(range(rows)):     
         for i in range(cols): 
             obs_x = mirror_data[0][j,i]
             obs_y = mirror_data[1][j,i]
@@ -181,8 +180,7 @@ def fresnel(aperture,x,y, mirror_data, k):
 
             d = np.sqrt((x - obs_x)**2 + (y - obs_y)**2 + obs_dist**2)
             near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
-
-            
+      
     return near_field   #as reflected ONTO mirror
     
 def fraunhofer(theta, k, near_grid, mirror_coord):
@@ -193,7 +191,7 @@ def fraunhofer(theta, k, near_grid, mirror_coord):
     dy = mirror_coord[1] / rows_in_mirror
 
 # mesh of near_grid (360, 540) # Ny = 360, Nx = 540
-    Ny, Nx = near_grid.shape 
+    Ny, Nx = near_grid.shape
     y_vec = np.arange(-Ny//2, Ny//2) * dy
     x_vec = np.arange(-Nx//2, Nx//2) * dx
     X_mesh, Y_mesh = np.meshgrid(x_vec, y_vec)
@@ -229,19 +227,24 @@ aperture, x, y= ap_grid(N, dx, k, radius, edge_taper, phase_gradient)
 mirror_data_1, length, width, distance = mirror(dx, theta_1, mirror_coord)
 
 
-# new_mirror_z = bilinear_interpolation(mirror_data_1)
+new_mirror_z = bilinear_interpolation(mirror_data_1)
+
+
 
 # # mirror plotting
 # Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
 # plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z[2])
 
+#prior to running vectorized approach
+
+
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #flat mirror
-near = fresnel(aperture, x, y, mirror_data_1, k)
+# near = fresnel(aperture, x, y, mirror_data_1, k)
 
 # #for altered mirror states
-# near = fresnel(aperture, x, y , new_mirror_z, lamda)
+near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
 I_far, x_degree, y_degree = fraunhofer(theta_1, k, near, mirror_coord)
 
@@ -265,7 +268,7 @@ ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
 ap.set_title("Aperture Amplitude")
 ap.set_ylabel("Diameter of Aperture (m)")
 
-close1 = close.imshow(np.log10(np.abs(near)**2), 
+close1 = close.imshow(10 * (np.log10(np.abs(near)**2) - np.log10(np.abs(near).max()**2)), 
             extent=[length.min(), length.max(), width.min(), width.max()], 
             aspect='equal', 
             origin='lower')

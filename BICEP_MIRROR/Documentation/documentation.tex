@@ -113,6 +113,14 @@ Global variables allow for customazation of the simulation. The variables are as
 \end{table}
 
 
+N number approximated for optimalization via the equation below:
+\begin{equation}
+    \Delta \text{x} \lessdot \frac{\lambda \text{z}}{2 \text{Aperture Width}}
+\end{equation}
+
+Giving us about a N number for pixels at 125. 
+
+
 \section*{\centering{\textbf{Aperture Creation}}}
 The aperture function focuses on creating a 2d spatial grid that defines a circular aperture.
  It uses an N number of grid points along each axis, and grid spacing (dx) in the x and y directions.
@@ -175,6 +183,16 @@ This ensures that the actual math for the Fresnel diffraction is preserved and a
 This function also accounts for the complex phase shift that is created from the tilted mirror 
 
 % also known as rayleigh - sommerfeld/fresnel integral
+
+SPEED FOR LOOPS
+One of the barriers for this kind of loop is how its processed. 
+
+
+% Documentation reference:
+% https://ar5iv.labs.arxiv.org/html/1304.1203
+
+% https://opg.optica.org/directpdfaccess/83cda41c-9881-4669-beb4fff4cef8259a_242526/ol-37-19-4128.pdf?da=1&id=242526&seq=0&mobile=no
+
 
 
 % ACCOMODATING THE ANGLED REFLECTION:
