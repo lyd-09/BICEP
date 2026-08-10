@@ -202,7 +202,15 @@ One of the barriers for this kind of loop is how its processed.
 %  \begin{equation*}
 %     e^{i \pi} = cos(\pi) + i sin(\pi) = -1 + 0j = -1
 % \end{equation*}
+\subsection*{\centering{\textbf{Phase Adjustment for Non-flat Mirror}}}
 
+This function applies a phase mesh to change the complex fields of the Near field output. The following phase array helps to convert uneven surface height on the mirror map into a phase delay map.
+
+\begin{equation}
+    \phi(x,y) = \frac{2 \pi}{\lambda} 2 h(x,y)
+\end{equation}
+
+This equation is broken down in the function to calculate the phase mask (derived from Eulers formula) and tranform the real numbers into complex 2d phasors. That are then matrix multiplied to give an output of the uneven mirror. 
 
 
 \section*{\centering{\textbf{Fraunhofer Diffraction}}} A two step propogation:
@@ -279,7 +287,9 @@ Scalar diffraction theory
 % \section*{\centering{\textbf{On going questions}}}
 
 
+Phase adjustment for non-flat mirror and phase array equation:
 
+% https://arxiv.org/pdf/2505.01019
 
 
 

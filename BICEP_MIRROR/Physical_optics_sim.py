@@ -80,6 +80,9 @@ def mirror(dx, theta, mirror_coord):
 
     length_axis = (np.arange(N_x) - N_x//2) * dx ##Check dx here.....dividing by dx then multiplying
     width_axis = (np.arange(N_y) - N_y//2) * dx
+    #for when pixel size is increased
+    # length_axis = np.linspace(-L_val, L_val, N_x)
+    # width_axis = np.linspace(-W_val, W_val, N_y)
 
     x_grid, y_grid = np.meshgrid(length_axis, width_axis)
 
@@ -182,7 +185,18 @@ def fresnel(aperture,x,y, mirror_data, k):
             near_field[j, i] = (np.sum(aperture * np.exp(1j * k * d) / d))
       
     return near_field   #as reflected ONTO mirror
-    
+
+def apply_phase_array_nonflat(wavenumber, near, new_mirror_z):
+    phi = wavenumber * 2 * new_mirror_z[2]
+
+    #creating a complex phase mask
+    phase_mask = np.exp(1j * phi)
+
+    near_nonflat = near * phase_mask
+
+    return near_nonflat
+
+
 def fraunhofer(theta, k, near_grid, mirror_coord):
 
     rows_in_mirror = near_grid.shape[0]
@@ -226,9 +240,8 @@ aperture, x, y= ap_grid(N, dx, k, radius, edge_taper, phase_gradient)
 
 mirror_data_1, length, width, distance = mirror(dx, theta_1, mirror_coord)
 
-
+#for new phase output of non flat mirror
 new_mirror_z = bilinear_interpolation(mirror_data_1)
-
 
 
 # # mirror plotting
@@ -241,13 +254,18 @@ new_mirror_z = bilinear_interpolation(mirror_data_1)
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #flat mirror
-# near = fresnel(aperture, x, y, mirror_data_1, k)
+near = fresnel(aperture, x, y, mirror_data_1, k)
 
+non_flat = apply_phase_array_nonflat(k, near, new_mirror_z)
 # #for altered mirror states
-near = fresnel(aperture, x, y , new_mirror_z, lamda)
+# near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
-I_far, x_degree, y_degree = fraunhofer(theta_1, k, near, mirror_coord)
+I_far, x_degree, y_degree = fraunhofer(theta_1, k, non_flat, mirror_coord)
 
+I_far_original, x_degree, y_degree = fraunhofer(theta_1, k, near, mirror_coord)
+
+#for non log plot 
+difference_fft = (I_far_original - I_far).real
 
 #unofficial y axis adjustment 
 x_min, x_max = -x_degree, x_degree
@@ -261,48 +279,87 @@ else:
     y_min, y_max = -y_degree, y_degree
 
 
-#new printing layout six side by side
-fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
+#plotting the difference between far fields
 
-ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
-ap.set_title("Aperture Amplitude")
-ap.set_ylabel("Diameter of Aperture (m)")
+fig, ((orig, non, diff), (orig_phase, non_phase, diff_phase)) = plt.subplots(2,3, figsize=(8,12))
 
-close1 = close.imshow(10 * (np.log10(np.abs(near)**2) - np.log10(np.abs(near).max()**2)), 
-            extent=[length.min(), length.max(), width.min(), width.max()], 
-            aspect='equal', 
-            origin='lower')
-close.set_title("Mirror Projection Amplitude")
-close.set_xlabel("Length (m)")
-close.set_ylabel("Width (m)")
+orig1 = orig.imshow(np.log10(np.abs(I_far_original)**2), extent=[x_min, x_max, y_min, y_max])
+orig.set_title("Flat mirror FFT")
+orig.set_xlim(-3,3)
+orig.set_ylim(-3,3)
 
-far1 = far.imshow((np.log10(np.abs(I_far)**2)) , extent=[x_min, x_max, y_min, y_max])
-far.set_title("Far-field Amplitude")
-fig.colorbar(far1, ax=far, label="Intensity")
-far.set_xlabel("Degrees")
-far.set_ylabel("Degrees")
-# far.set_xlim(-3,3)
-# far.set_ylim(-3,3)
+non1 = non.imshow(np.log10(np.abs(I_far)**2), extent=[x_min, x_max, y_min, y_max])
+non.set_title("Non-flat mirror FFT")
+non.set_xlim(-3,3)
+non.set_ylim(-3,3)
 
-ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
-ap_phase.set_title("Aperture Phase")
-ap_phase.set_ylabel("Diameter of Aperture (m)")
+diff1 = diff.imshow(difference_fft, extent=[x_min, x_max, y_min, y_max])
+diff.set_title("Difference")
+diff.set_xlim(-3,3)
+diff.set_ylim(-3,3)
 
-close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
-            extent=[length.min(), length.max(), width.min(), width.max()], 
-            aspect='equal', 
-            origin='lower')
-close_phase.set_title("Mirror Projection Phase")
-close_phase.set_xlabel("Length (m)")
-close_phase.set_ylabel("Width (m)")
+orig_phase1 = orig_phase.imshow(np.atan2(np.imag(I_far_original), np.real(I_far_original)), extent=[x_min, x_max, y_min, y_max])
+orig_phase.set_title("Original Phase")
+orig_phase.set_xlim(-3,3)
+orig_phase.set_ylim(-3,3)
 
-far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
-far_phase.set_title("Far-field Phase")
-fig.colorbar(far2, ax=far_phase, label="Intensity")
-far_phase.set_xlabel("Degrees")
-far_phase.set_ylabel("Degrees")
-# far_phase.set_xlim(-3,3)
-# far_phase.set_ylim(-3,3)
+non_phase1 = non_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)),extent=[x_min, x_max, y_min, y_max])
+non_phase.set_title("Non-flat phase")
+non_phase.set_xlim(-3,3)
+non_phase.set_ylim(-3,3)
+
+diff_phase1 = diff_phase.imshow(np.atan2(np.imag(difference_fft), np.real(difference_fft)), extent=[x_min, x_max, y_min, y_max])
+diff_phase.set_title("Difference phase")
+diff_phase.set_xlim(-3,3)
+diff_phase.set_ylim(-3,3)
 
 plt.tight_layout()
 plt.show()
+
+
+
+# #new printing layout six side by side
+# fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
+
+# ap1 = ap.imshow(np.abs(aperture), extent = [-radius, radius, -radius, radius])
+# ap.set_title("Aperture Amplitude")
+# ap.set_ylabel("Diameter of Aperture (m)")
+
+# close1 = close.imshow(10 * (np.log10(np.abs(near)**2) - np.log10(np.abs(near).max()**2)), 
+#             extent=[length.min(), length.max(), width.min(), width.max()], 
+#             aspect='equal', 
+#             origin='lower')
+# close.set_title("Mirror Projection Amplitude")
+# close.set_xlabel("Length (m)")
+# close.set_ylabel("Width (m)")
+
+# far1 = far.imshow((np.log10(np.abs(I_far)**2)) , extent=[x_min, x_max, y_min, y_max])
+# far.set_title("Far-field Amplitude")
+# fig.colorbar(far1, ax=far, label="Intensity")
+# far.set_xlabel("Degrees")
+# far.set_ylabel("Degrees")
+# # far.set_xlim(-3,3)
+# # far.set_ylim(-3,3)
+
+# ap2 = ap_phase.imshow(np.atan2(np.imag(aperture), np.real(aperture)), extent = [-radius, radius, -radius, radius])
+# ap_phase.set_title("Aperture Phase")
+# ap_phase.set_ylabel("Diameter of Aperture (m)")
+
+# close2 = close_phase.imshow(np.atan2(np.imag(near), np.real(near)), 
+#             extent=[length.min(), length.max(), width.min(), width.max()], 
+#             aspect='equal', 
+#             origin='lower')
+# close_phase.set_title("Mirror Projection Phase")
+# close_phase.set_xlabel("Length (m)")
+# close_phase.set_ylabel("Width (m)")
+
+# far2 = far_phase.imshow(np.atan2(np.imag(I_far), np.real(I_far)), extent=[x_min, x_max, y_min, y_max], origin='lower')
+# far_phase.set_title("Far-field Phase")
+# fig.colorbar(far2, ax=far_phase, label="Intensity")
+# far_phase.set_xlabel("Degrees")
+# far_phase.set_ylabel("Degrees")
+# # far_phase.set_xlim(-3,3)
+# # far_phase.set_ylim(-3,3)
+
+# plt.tight_layout()
+# plt.show()
