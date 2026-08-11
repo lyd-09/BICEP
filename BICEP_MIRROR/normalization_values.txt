@@ -1,0 +1,11 @@
+so for the peak normal i got these numbers:
+- DIFFERENCE ARRAY METRICS ---
+Max difference value: 0.22676156881244092
+Min difference value: -0.23846509435128693
+Sum of differences:   -2.502031276806628
+
+and for the integral normal i got these:
+DIFFERENCE ARRAY METRICS ---
+Max difference value: 0.02780380200709521
+Min difference value: -0.026810224576659637
+Sum of differences:   4.028172732345431e-15

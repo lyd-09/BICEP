@@ -263,6 +263,16 @@ Where $L_y$ is equal to $N_y$ times $\Delta_{y in}$.
 
 When the intermediate aperture of the near field mirror is used, the FFT calculation compresses the image in the y axis direction. This can be adjusted in the plotting steps when the y max and mins are calculated for the FFT plot. An adjustment factor of root two can help to recenter the image. 
 
+Normalization teqnuiques for graph comparision with difference between the flat and nonflat mirror fft.
+
+Parseval's theorem:
+
+\begin{equation}
+    
+\end{equation}
+
+This helps to ensure that even when different padding sizes are used, the total integrated energy still equals 1.0
+
 %didnt work
 % When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
 %  \begin{equation*}

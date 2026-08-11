@@ -175,9 +175,6 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\sansmathfonts\t1xcm
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\sansmathfonts\t1xcmss.fd
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\sansmathfonts\t1xcmss.fd
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecss1000.tfm
-INPUT .\documentation.aux
-INPUT .\documentation.aux
-INPUT documentation.aux
 OUTPUT documentation.aux
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\sansmathfonts\omlcmssm.fd
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\sansmathfonts\omlcmssm.fd
@@ -201,12 +198,6 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\00miktex\epstopdf-s
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\caption\ltcaption.sty
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex\latex\caption\ltcaption.sty
-INPUT .\documentation.out
-INPUT .\documentation.out
-INPUT documentation.out
-INPUT documentation.out
-INPUT .\documentation.out
-INPUT .\documentation.out
 OUTPUT documentation.out
 OUTPUT documentation.pdf
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecss1728.tfm
