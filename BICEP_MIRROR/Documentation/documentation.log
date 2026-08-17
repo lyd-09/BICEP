@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  11 AUG 2026 14:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  17 AUG 2026 15:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -598,13 +598,12 @@ Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
 LaTeX Font Info:    Trying to load font information for T1+xcmss on input line 82.
  (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\t1xcmss.fd
 File: t1xcmss.fd 2024/10/15
-)
-No file documentation.aux.
+) (documentation.aux)
 \openout1 = `documentation.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmssm/m/it on input line 82.
 LaTeX Font Info:    Trying to load font information for OML+cmssm on input line 82.
-(C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\omlcmssm.fd
+ (C:\Users\lj350\AppData\Local\Programs\MiKTeX\tex/latex/sansmathfonts\omlcmssm.fd
 File: omlcmssm.fd 2024/10/15
 )
 LaTeX Font Info:    ... okay on input line 82.
@@ -708,8 +707,10 @@ Package gensymb Info: Using \Omega for \ohm on input line 82.
 Package gensymb Warning: Not defining \micro.
 
 Package hyperref Info: Link coloring OFF on input line 82.
+(documentation.out) (documentation.out)
 \@outlinefile=\write3
 \openout3 = `documentation.out'.
+
 
 
 LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <18> not available
@@ -753,65 +754,6 @@ Package fancyhdr Warning: \headheight is too small (0.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
 
 [2]
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:271: Missing $ inserted.
-<inserted text> 
-                $
-l.271 
-      
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:271: Display math should end with $$.
-<to be read again> 
-                   \tex_par:D 
-l.271 
-      
-The `$' that I just saw supposedly matches a previous `$$'.
-So I shall assume that you typed `$$' both times.
-
-
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:272: LaTeX Error: Bad math environment delimiter.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.272 \end{equation}
-                    
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:272: You can't use `\eqno' in vertical mode.
-\veqno ->\@kernel@eqno 
-                       \aftergroup \ignorespaces 
-l.272 \end{equation}
-                    
-Sorry, but I'm not programmed to handle this case;
-I'll just pretend that you didn't ask for it.
-If you're in the wrong mode, you might be able to
-return to the right one by typing `I}' or `I$' or `I\par'.
-
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:272: Missing $ inserted.
-<inserted text> 
-                $
-l.272 \end{equation}
-                    
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex:272: Display math should end with $$.
-<to be read again> 
-                   \endgroup 
-l.272 \end{equation}
-                    
-The `$' that I just saw supposedly matches a previous `$$'.
-So I shall assume that you typed `$$' both times.
-
-
 
 
 Package fancyhdr Warning: \headheight is too small (0.0pt): 
@@ -829,42 +771,26 @@ Package fancyhdr Warning: \headheight is too small (0.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
 
-[4]
-
-
-Package fancyhdr Warning: \headheight is too small (0.0pt): 
-(fancyhdr)                Make it at least 12.0pt, for example:
-(fancyhdr)                \setlength{\headheight}{12.0pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
-
-[5] (documentation.aux)
+[4] (documentation.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-08-13>
  ***********
-
-
-Package rerunfilecheck Warning: File `documentation.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `documentation.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `documentation.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 16944 strings out of 468133
- 278850 string characters out of 5430712
- 732380 words of memory out of 5000000
- 45208 multiletter control sequences out of 15000+600000
- 653712 words of font info for 144 fonts, out of 8000000 for 9000
+ 16956 strings out of 468133
+ 279264 string characters out of 5430712
+ 732371 words of memory out of 5000000
+ 45212 multiletter control sequences out of 15000+600000
+ 654099 words of font info for 146 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,1068b,485s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/ssmsbm10.pfb>
-Output written on documentation.pdf (5 pages, 176005 bytes).
+ 75i,12n,79p,1068b,482s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi5.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/ssmsbm10.pfb>
+Output written on documentation.pdf (4 pages, 187331 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
+ 110 PDF objects out of 1000 (max. 8388607)
  13 named destinations out of 1000 (max. 500000)
  26625 words of extra memory for PDF output out of 29859 (max. 10000000)
 

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1786473935.82834 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1786473938.79591 2
+["pdflatex"] 1786994164.54666 "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" "documentation.pdf" "documentation" 1786994166.95682 0
   "C:/Users/lj350/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1781633510 507577 3d7556b69ef2c770f24eb5a394645d0f ""
   "C:/Users/lj350/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1758407254 13257343 a244d020d8275d22801b144b411f6c93 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1001775420 2971 def0b6c1f0b107b3b936def894055589 ""
@@ -62,6 +62,7 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb" 1215618300 144018 78ee202c0d340458a26cbb39f48b6bb2 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb" 1729261307 27911 5964aff9520f976137063d69478d97d8 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb" 1729261307 35623 101e49908231eab492565c8022c5e7f8 ""
+  "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi5.pfb" 1729261307 36164 83b2289bd5ac22f782557f4b5ac6ed6f ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb" 1729261307 36108 800de5e25b143f7a45fb7671a91723da ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb" 1729261307 42737 641adf4048036b5c44a002e2577631c6 ""
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb" 1729261307 43631 34edee2c77cf8a80d1b6f503fc415b11 ""
@@ -160,10 +161,10 @@
   "C:/Users/lj350/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
   "TS1cmsmf.fd" 0 -1 0 ""
   "TS1xcmss.fd" 0 -1 0 ""
-  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1786473933 13721 0f3d0cd8bc953c668e137bac7fc5fa0c ""
-  "documentation.aux" 1786473938 416 fb4492d8b82996f02760079b0c05dedc "pdflatex"
-  "documentation.out" 1786473937 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "documentation.tex" 1786473933 13721 0f3d0cd8bc953c668e137bac7fc5fa0c ""
+  "c:/Users/lj350/Downloads/BICEP/BICEP_MIRROR/Documentation/documentation.tex" 1786994163 14290 79dd409ed46321324b36f794d053faa1 ""
+  "documentation.aux" 1786994166 416 e21efb3120ad0076bb5823215897fd0c "pdflatex"
+  "documentation.out" 1786994166 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "documentation.tex" 1786994163 14290 79dd409ed46321324b36f794d053faa1 ""
   (generated)
   "documentation.aux"
   "documentation.log"

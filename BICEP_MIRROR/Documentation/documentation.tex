@@ -267,9 +267,7 @@ Normalization teqnuiques for graph comparision with difference between the flat 
 
 Parseval's theorem:
 
-\begin{equation}
-    
-\end{equation}
+
 
 This helps to ensure that even when different padding sizes are used, the total integrated energy still equals 1.0
 
@@ -314,6 +312,23 @@ Peak Normalization - Fraunhofer function: https://blogs.bath.ac.uk/python/findin
 
 Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrumentation Engineers. Computational Fourier Optics a MATLAB Tutorial. SPIE, 2011, https://doi.org/10.1117/3.858456.
 
+\section*{\centering{\textbf{Analysis}}}
+Fitting to an eliptical 2D gaussian. 
+
+\begin{equation}
+    \delta (x) = \frac{1}{\omega} e^{-\frac{1}{2}(x - \mu)^T \epsilon (x - \mu)}
+\end{equation}
+where epsilon equals the precision matrix:
+\begin{equation}
+    \epsilon = \begin{bmatrix}
+        r_{x}^2 & r_{xy}^2 \\
+        r_{xy}^2 & r_{y}^2
+    \end{bmatrix}
+\end{equation}
+
+This helped to tell us how far the nonflatness of the mirror spread or compressed the beam.
+
+In this teqnique the normalized integral comparision is used to avoid losses in total energy concerning the beams shape. 
 
 % DX verification techniques : https://labsites.rochester.edu/fienup/wp-content/uploads/2019/07/ASJ_ArbSampFTs_JOSAA2018.pdf
 

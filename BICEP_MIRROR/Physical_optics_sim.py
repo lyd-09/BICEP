@@ -240,14 +240,27 @@ def fraunhofer(theta, k, near_grid, mirror_coord):
     dfx = 1 / (1024 * dx)
 
     dfy = 1/ (1024 * dy)
+
     #integral normalization
     total_integral = np.sum(norm) * dfx * dfy
 
     normalized_integral = norm / total_integral 
+
     #peak normlz
     normalized_peak = norm / np.max(norm)
 
     return obs_plane, normalized_integral, normalized_peak, x_limit_deg, y_limit_deg
+
+def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
+    x, y = xy
+
+    # Matrix expansion (precision matrix)
+    exponent = -0.5 * (r_x2 * (x - mu_x)**2 + 2 * r_xy2 * (x - mu_x) * (y - mu_y) + r_y2 * (y - mu_y)**2)
+    
+    # 1/omega amplitude multiplier
+    intensity_difference = ((1.0 / omega) * np.exp(exponent)).ravel()
+
+    return intensity_difference
 
 
 aperture, x, y= ap_grid(N, dx, k, radius, edge_taper, phase_gradient)
@@ -294,39 +307,42 @@ else:
 
     y_min, y_max = -y_degree, y_degree
 
-#plotting side by side for integral and peak
-limit_integral = max(abs(difference_fft_integral.min()), abs(difference_fft_integral.max()))
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! PLOTTING
 
-limit_peak = max(abs(difference_fft_peak.min()), abs(difference_fft_peak.max()))
+# #plotting side by side for integral and peak
+# limit_integral = max(abs(difference_fft_integral.min()), abs(difference_fft_integral.max()))
+
+# limit_peak = max(abs(difference_fft_peak.min()), abs(difference_fft_peak.max()))
 
 
-fig, ((diff1, diff2), (diff_phase1, diff_phase2)) = plt.subplots(2,2, figsize=(12,8))
+# fig, ((diff1, diff2), (diff_phase1, diff_phase2)) = plt.subplots(2,2, figsize=(12,8))
 
-diff_integral = diff1.imshow(difference_fft_integral, extent=[x_min, x_max, y_min, y_max],cmap='bwr',vmin=-limit_integral,vmax=limit_integral)
-plt.colorbar(diff_integral, ax=diff1)
-diff1.set_title("Difference with integral Norm")
-diff1.set_xlim(-3,3)
-diff1.set_ylim(-3,3)
+# diff_integral = diff1.imshow(difference_fft_integral, extent=[x_min, x_max, y_min, y_max],cmap='bwr',vmin=-limit_integral,vmax=limit_integral)
+# plt.colorbar(diff_integral, ax=diff1)
+# diff1.set_title("Difference with integral Norm")
+# diff1.set_xlim(-3,3)
+# diff1.set_ylim(-3,3)
 
-diff_peak = diff2.imshow(difference_fft_peak, extent=[x_min, x_max, y_min, y_max],cmap='seismic', vmin=-limit_peak,vmax=limit_peak)
-plt.colorbar(diff_peak, ax=diff2)
-diff2.set_title("Difference with peak Norm")
-diff2.set_xlim(-3,3)
-diff2.set_ylim(-3,3)
+# diff_peak = diff2.imshow(difference_fft_peak, extent=[x_min, x_max, y_min, y_max],cmap='seismic', vmin=-limit_peak,vmax=limit_peak)
+# plt.colorbar(diff_peak, ax=diff2)
+# diff2.set_title("Difference with peak Norm")
+# diff2.set_xlim(-3,3)
+# diff2.set_ylim(-3,3)
 
-diff_phase_integral = diff_phase1.imshow(np.atan2(np.imag(difference_fft_integral), np.real(difference_fft_integral)), extent=[x_min, x_max, y_min, y_max],vmin=-limit_integral,vmax=limit_integral)
-diff_phase1.set_title("Difference phase for integral")
-diff_phase1.set_xlim(-3,3)
-diff_phase1.set_ylim(-3,3)
+# diff_phase_integral = diff_phase1.imshow(np.atan2(np.imag(difference_fft_integral), np.real(difference_fft_integral)), extent=[x_min, x_max, y_min, y_max],vmin=-limit_integral,vmax=limit_integral)
+# diff_phase1.set_title("Difference phase for integral")
+# diff_phase1.set_xlim(-3,3)
+# diff_phase1.set_ylim(-3,3)
 
-diff_phase_peak = diff_phase2.imshow(np.atan2(np.imag(difference_fft_peak), np.real(difference_fft_peak)), extent=[x_min, x_max, y_min, y_max],vmin=-limit_peak,vmax=limit_peak)
-diff_phase2.set_title("Difference phase for peak")
-diff_phase2.set_xlim(-3,3)
-diff_phase2.set_ylim(-3,3)
+# diff_phase_peak = diff_phase2.imshow(np.atan2(np.imag(difference_fft_peak), np.real(difference_fft_peak)), extent=[x_min, x_max, y_min, y_max],vmin=-limit_peak,vmax=limit_peak)
+# diff_phase2.set_title("Difference phase for peak")
+# diff_phase2.set_xlim(-3,3)
+# diff_phase2.set_ylim(-3,3)
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # #plotting the difference between far fields
 # limit_integral = max(abs(difference_fft.min()), abs(difference_fft.max()))
 
@@ -368,7 +384,7 @@ plt.show()
 # plt.show()
 
 
-
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # # #new printing layout six side by side
 # # fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
 
