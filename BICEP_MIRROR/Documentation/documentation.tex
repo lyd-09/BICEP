@@ -160,6 +160,12 @@ Lastly, an adjustment is applied to ensure that the physics remains accurate.
 \end{equation}
 (insert ref)
 
+Inside the aperture function a padding was implemented depending on the N scaling factors for both the N of the aperture, and intended N of the mirror. This was to keep to ensure that the matricies were still able to be multiplied by one another, the zero padding was added to the aperture if the N of the mirror exceeded that of the aperture space. This often occured to enhance the images of the far field beam without cutting into processing time. Additionally, keeping in mind the Angular Spectrum method, the sampling criteria was observed. This was to ensure that the Z progoation distance is greater than or equal to the Zmin distance calculated by the equation below:
+\begin{equation}
+    Z_{min} = \frac{N_{Mirror}(dx_{mirror}^2)}{\lambda}
+\end{equation}
+
+
 \section*{\centering{\textbf{Mirror Creation}}}
 The mirror function creates new coordinates that can be used for the fresnel calculation and later on in the fraunhofer calculation.
 
@@ -271,47 +277,6 @@ Parseval's theorem:
 
 This helps to ensure that even when different padding sizes are used, the total integrated energy still equals 1.0
 
-%didnt work
-% When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
-%  \begin{equation*}
-%     \Delta_{f_x} =  \frac{\sin(\theta_{tilt})}{\lambda} 
-% \end{equation*}
-
-Scalar diffraction theory
-
-% Global scaling for FFT:
-% \begin{equation*}
-%     \Delta f_x = \frac{1}{N \cdot \Delta x}
-% \end{equation*}
-% The output grid of an FFT is typically in meters (-1), these spatial frequencies map to physical angles in radians using the light's wavelength:
-% \begin{equation*}
-%     \Delta \theta_x = \frac{\lambda}{N \cdot \Delta x}
-% \end{equation*}
-
-% for polarization and angled light through aperture - https://www.aanda.org/articles/aa/full_html/2023/09/aa43156-22/aa43156-22.html  [45 tilt and linear adaptation to phase adjustment from mirror]
-
-% https://rafael-fuente.github.io/simulating-light-diffraction-with-lenses-visualizing-fourier-optics.html
-
-% \section*{\centering{\textbf{On going questions}}}
-
-
-Phase adjustment for non-flat mirror and phase array equation:
-
-% https://arxiv.org/pdf/2505.01019
-
-
-
-
-
-
-\newpage
-\section*{\centering{\textbf{References}}}
-
-
-Peak Normalization - Fraunhofer function: https://blogs.bath.ac.uk/python/finding-maximum-values-from-arrays/
-
-Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrumentation Engineers. Computational Fourier Optics a MATLAB Tutorial. SPIE, 2011, https://doi.org/10.1117/3.858456.
-
 \section*{\centering{\textbf{Analysis}}}
 Fitting to an eliptical 2D gaussian. 
 
@@ -329,6 +294,72 @@ where epsilon equals the precision matrix:
 This helped to tell us how far the nonflatness of the mirror spread or compressed the beam.
 
 In this teqnique the normalized integral comparision is used to avoid losses in total energy concerning the beams shape. 
+
+\begin{table}[H]
+    \begin{center}
+        \begin{tabular}{|c|c|}
+        \hline
+        Variable & What it does\\
+        \hline\hline
+            $xy$ & Frequency Coordinates\\
+            omega & Radius of circular aperture \\
+            $mu_x$ & Mean peak (center) along the x-axis \\
+            $mu_y$ & Mean peak along the y-axis\\
+            $r_x2$ & Precision matrix variable. Width along the x-axis \\
+            $r_y2$ & Precision matrix variable. Width along y axis.\\
+            $r_xy2$ &  Precision matrix variable. Tilt or rotation of the eliptical beam. \\
+            $\omega$ &  scaling factor \\
+        \hline
+        \end{tabular}
+    \end{center}
+    \caption{Available variables for gaussian fit function}
+\end{table}
+
+
+
+%didnt work
+% When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
+%  \begin{equation*}
+%     \Delta_{f_x} =  \frac{\sin(\theta_{tilt})}{\lambda} 
+% \end{equation*}
+
+Scalar diffraction theory
+
+% Global scaling for FFT:
+% \begin{equation*}
+%     \Delta f_x = \frac{1}{N \cdot \Delta x}
+% \end{equation*}
+% The output grid of an FFT is typically in meters (-1), these spatial frequencies map to physical angles in radians using the light's wavelength:
+% \begin{equation*}
+%     \Delta \theta_x = \frac{\lambda}{N \cdot \Delta x}
+% \end{equation*}
+
+
+
+
+
+
+
+\newpage
+\section*{\centering{\textbf{References}}}
+
+% for polarization and angled light through aperture - https://www.aanda.org/articles/aa/full_html/2023/09/aa43156-22/aa43156-22.html  [45 tilt and linear adaptation to phase adjustment from mirror]
+
+% https://rafael-fuente.github.io/simulating-light-diffraction-with-lenses-visualizing-fourier-optics.html
+
+% \section*{\centering{\textbf{On going questions}}}
+
+
+Phase adjustment for non-flat mirror and phase array equation:
+
+% https://arxiv.org/pdf/2505.01019
+
+
+Peak Normalization - Fraunhofer function: https://blogs.bath.ac.uk/python/finding-maximum-values-from-arrays/
+
+Diffraction Scaling - Voelz, David George, and Society of Photo-optical Instrumentation Engineers. Computational Fourier Optics a MATLAB Tutorial. SPIE, 2011, https://doi.org/10.1117/3.858456.
+
+
 
 % DX verification techniques : https://labsites.rochester.edu/fienup/wp-content/uploads/2019/07/ASJ_ArbSampFTs_JOSAA2018.pdf
 

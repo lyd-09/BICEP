@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import time 
 from tqdm import tqdm
 import math
 from numba import njit, prange
 import pandas as pd
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator, CloughTocher2DInterpolator
+from scipy.optimize import curve_fit
 from skimage.registration import phase_cross_correlation
 
 #can also abstract wavenumber to golabal variables
@@ -14,6 +16,7 @@ from skimage.registration import phase_cross_correlation
 #change to [nXm] resolution
 N = 125 #ideally(400)nope ideally (125)
 #[] dimensions
+N_mirror = 200
 radius = .25 #500 mm across!! (.25) aperture
 
 #mirror
@@ -39,10 +42,26 @@ z1 = 200 #m (where thermal source is, but reccomended 2000 for Fresnel number of
 phase_gradient = 1
 k = 2 * np.pi / lamda 
 
-def ap_grid(N, dx, k, radius, edge_taper, phase_gradient):
-    coords = (np.arange(N) - (N/2)) * dx
-    x, y = np.meshgrid(coords, coords)
+def ap_grid(N, dx, N_mirror, k, radius, edge_taper, phase_gradient):
+    aperture_place_holder = np.ones((N,N), dtype=complex)
+    if N != N_mirror:
+        a2 = np.zeros(shape=(N_mirror, N_mirror), dtype=complex)
 
+        padded_center = N_mirror // 2
+        row_start = padded_center - (N // 2)
+        col_start = padded_center - (N // 2)
+
+        a2[row_start : row_start + N, col_start : col_start + N] = aperture_place_holder
+
+        N_new = N_mirror
+    else:
+        a2 = aperture_place_holder
+        N_new = N
+
+    z_min_allowed = (N_mirror * (dx**2)) / 2e-3
+    print(z_min_allowed)
+    coords = (np.arange(N_new) - (N_new/2)) * dx
+    x, y = np.meshgrid(coords, coords)
     # aperture calc
     r = np.sqrt(x**2 + y**2)
     inside = r < radius
@@ -62,7 +81,7 @@ def ap_grid(N, dx, k, radius, edge_taper, phase_gradient):
     full_steered_field = amplitude_profile * adjustment
 
     # aperture boundary
-    aperture = np.zeros(shape=(N,N), dtype=complex)
+    aperture = np.zeros(shape=(N_new,N_new), dtype=complex)
     aperture[inside] = full_steered_field[inside]
 
 
@@ -249,7 +268,7 @@ def fraunhofer(theta, k, near_grid, mirror_coord):
     #peak normlz
     normalized_peak = norm / np.max(norm)
 
-    return obs_plane, normalized_integral, normalized_peak, x_limit_deg, y_limit_deg
+    return obs_plane, normalized_integral, normalized_peak, x_limit_deg, y_limit_deg, X2, Y2
 
 def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
     x, y = xy
@@ -263,40 +282,63 @@ def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
     return intensity_difference
 
 
-aperture, x, y= ap_grid(N, dx, k, radius, edge_taper, phase_gradient)
+aperture, x, y= ap_grid(N, dx, N_mirror, k, radius, edge_taper, phase_gradient)
 
 mirror_data_1, length, width, distance = mirror(dx, theta_1, mirror_coord)
 
 #for new phase output of non flat mirror
 new_mirror_z = bilinear_interpolation(mirror_data_1)
 
-
-# # mirror plotting
-# Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
-# plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z[2])
-
-#prior to running vectorized approach
-
-
-
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #flat mirror
-near = fresnel(aperture, x, y, mirror_data_1, k)
+# near = fresnel(aperture, x, y, mirror_data_1, k)
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! computational save
+#most changed variables (N, theta_1, theta_2)
+cache_filename = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}.npy"
+
+if os.path.exists(cache_filename):
+    print("File already found. Loading in Fresnel near-field grid")
+    near = np.load(cache_filename)
+else:
+    print("File not found. Running Fresnel calculation")
+    near = fresnel(aperture, x, y, mirror_data_1, k)    
+    np.save(cache_filename, near)
+    print(f"Fresnel calculation saved to '{cache_filename}'")
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 non_flat = apply_phase_array_nonflat(k, near, new_mirror_z)
-# #for altered mirror states
-# near = fresnel(aperture, x, y , new_mirror_z, lamda)
 
-I_far, normalize_integral, normalize_peak, x_degree, y_degree = fraunhofer(theta_1, k, non_flat, mirror_coord)
+I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhofer(theta_1, k, non_flat, mirror_coord)
 
-I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree = fraunhofer(theta_1, k, near, mirror_coord)
+I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(theta_1, k, near, mirror_coord)
 
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
 difference_fft_peak = (normalize_orig_peak - normalize_peak).real
 difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 
-#unofficial y axis adjustment 
+# preparation for 2d gauss
+xy_input = np.vstack((X2.ravel(), Y2.ravel()))
+ydata = difference_fft_integral.ravel()
+peak_height = np.max(difference_fft_integral)
+omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
+
+#curve fit 
+popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0])
+#then extract
+optimized_omega, opt_mu_x, opt_mu_y, opt_r_x2, opt_r_y2, opt_r_xy2 = popt
+
+print(f"Peak amplitude (1/omega): {1.0 / optimized_omega:.5f}")
+print(f"Center shift: (X: {opt_mu_x:.4f}, Y: {opt_mu_y:.4f})")
+print(f"r_x^2 = {opt_r_x2:.2f}, r_y^2 = {opt_r_y2:.2f}, r_xy^2: {opt_r_xy2:.4f}")
+
+#optimized parameters then reshape
+fit_map_flat = gaussian_fit(xy_input, *popt)
+fit_map_2d = fit_map_flat.reshape(X2.shape)
+residual_map = difference_fft_integral - fit_map_2d
+
+#axis adjustment 
 x_min, x_max = -x_degree, x_degree
 
 if theta_1 == 45:
@@ -308,6 +350,41 @@ else:
     y_min, y_max = -y_degree, y_degree
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! PLOTTING
+
+#plotting 2d gaussian fit to the normalized integral difference
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+#uniform color scale
+v_min = np.min(difference_fft_integral)
+v_max = np.max(difference_fft_integral)
+
+#raw sim data
+im1 = axes[0].pcolormesh(X2, Y2, difference_fft_integral, vmin=v_min, vmax=v_max, shading='auto')
+axes[0].set_title("Integral Difference")
+axes[0].set_xlabel("Frequency Coordinates")
+fig.colorbar(im1, ax=axes[0])
+axes[0].set_xlim(-4,4)
+axes[0].set_ylim(-4,4)
+
+#gaussian
+im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, vmin=v_min, vmax=v_max, shading='auto')
+axes[1].set_title("Gaussian Fit")
+axes[1].set_xlabel("Frequency Coordinates")
+fig.colorbar(im2, ax=axes[1])
+axes[1].set_xlim(-4,4)
+axes[1].set_ylim(-4,4)
+
+#residuals (raw - gaussian)
+im3 = axes[2].pcolormesh(X2, Y2, residual_map, shading='auto') 
+axes[2].set_title("Residual Errors")
+axes[2].set_xlabel("Frequency Coordinates")
+fig.colorbar(im3, ax=axes[2])
+axes[2].set_xlim(-4,4)
+axes[2].set_ylim(-4,4)
+
+plt.tight_layout()
+plt.show()
+
 
 # #plotting side by side for integral and peak
 # limit_integral = max(abs(difference_fft_integral.min()), abs(difference_fft_integral.max()))
@@ -430,3 +507,8 @@ else:
 
 # # plt.tight_layout()
 # # plt.show()
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# # mirror plotting
+# Set_Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
+# plot_points(Set_Cold, "Z (um)", -400, 1500, mirror_data_1[0],mirror_data_1[1],new_mirror_z[2])
