@@ -315,7 +315,11 @@ In this teqnique the normalized integral comparision is used to avoid losses in 
     \caption{Available variables for gaussian fit function}
 \end{table}
 
+The max peak of the gaussian difference can help to indicate how severe the wavefront distortions from the non flat mirror are. 
 
+If the $r_x$ and $r_y$ values in the precision matrix are highly unequal this can indicate an elliptical beam. Given that the simulation is mostly ran with a 45 degree tilt on the mirror, this ellipticity should be expected. 
+
+REMOVING THE TILT BEFORE ANALYSIS:
 
 %didnt work
 % When the nearfield space is tilted at any degree, the calculated FFT undergoes a fourier shift theorem, or a phase ramp shift. This can be corrected for optimal viewing by using the grating euqation below to adjust the final output frame for the FFT graph effectivly recentering the far field projection back to zero zero. 
