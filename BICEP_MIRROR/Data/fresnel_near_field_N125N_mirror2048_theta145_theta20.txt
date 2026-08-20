@@ -1,0 +1,3 @@
+Peak amplitude (1/omega): 0.02983
+Center shift: (X: 0.4896, Y: 0.8908)
+r_x^2 = 0.65, r_y^2 = 2.82, r_xy^2: 0.4019
