@@ -15,8 +15,8 @@ from skimage.registration import phase_cross_correlation
 #aperture
 #change to [nXm] resolution
 N = 125 #ideally(400)nope ideally (125)
-#[] dimensions
-N_mirror = 200
+#padding dimensions for mirror before fft: 1024, 2048,4096
+N_mirror = 1024
 radius = .25 #500 mm across!! (.25) aperture
 
 #mirror
@@ -35,7 +35,7 @@ mirror_coord = np.array([2.7,1.8,4]) #m
 #but i might be having to use mm.....
 # mirror_coord = np.array([2700, 1800, 4000]) #mm
 
-z1 = 200 #m (where thermal source is, but reccomended 2000 for Fresnel number of 0.12; which gives reasonable Fraunhofer approx)
+z_thermal = 200 #m (where thermal source is, but reccomended 2000 for Fresnel number of 0.12; which gives reasonable Fraunhofer approx)
 
 # phase_gradient = (degree_tilt * coord) + mirror_coord
 #not sure this is needed atm
@@ -43,24 +43,24 @@ phase_gradient = 1
 k = 2 * np.pi / lamda 
 
 def ap_grid(N, dx, N_mirror, k, radius, edge_taper, phase_gradient):
-    aperture_place_holder = np.ones((N,N), dtype=complex)
-    if N != N_mirror:
-        a2 = np.zeros(shape=(N_mirror, N_mirror), dtype=complex)
+    # aperture_place_holder = np.ones((N,N), dtype=complex)
+    # if N != N_mirror:
+    #     a2 = np.zeros(shape=(N_mirror, N_mirror), dtype=complex)
 
-        padded_center = N_mirror // 2
-        row_start = padded_center - (N // 2)
-        col_start = padded_center - (N // 2)
+    #     padded_center = N_mirror // 2
+    #     row_start = padded_center - (N // 2)
+    #     col_start = padded_center - (N // 2)
 
-        a2[row_start : row_start + N, col_start : col_start + N] = aperture_place_holder
+    #     a2[row_start : row_start + N, col_start : col_start + N] = aperture_place_holder
 
-        N_new = N_mirror
-    else:
-        a2 = aperture_place_holder
-        N_new = N
+    #     N_new = N_mirror
+    # else:
+    #     a2 = aperture_place_holder
+    #     N_new = N
 
-    z_min_allowed = (N_mirror * (dx**2)) / 2e-3
-    print(z_min_allowed)
-    coords = (np.arange(N_new) - (N_new/2)) * dx
+    # z_min_allowed = (N_mirror * (dx**2)) / 2e-3
+    # print(z_min_allowed)
+    coords = (np.arange(N) - (N/2)) * dx
     x, y = np.meshgrid(coords, coords)
     # aperture calc
     r = np.sqrt(x**2 + y**2)
@@ -81,7 +81,7 @@ def ap_grid(N, dx, N_mirror, k, radius, edge_taper, phase_gradient):
     full_steered_field = amplitude_profile * adjustment
 
     # aperture boundary
-    aperture = np.zeros(shape=(N_new,N_new), dtype=complex)
+    aperture = np.zeros(shape=(N,N), dtype=complex)
     aperture[inside] = full_steered_field[inside]
 
 
@@ -216,7 +216,7 @@ def apply_phase_array_nonflat(wavenumber, near, new_mirror_z):
     return near_nonflat
 
 
-def fraunhofer(theta, k, near_grid, mirror_coord):
+def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
 
     rows_in_mirror = near_grid.shape[0]
     col_mirror = near_grid.shape[1]
@@ -233,11 +233,11 @@ def fraunhofer(theta, k, near_grid, mirror_coord):
     fraunhoffer_phase_factor = np.exp(-1j * k * Y_mesh * np.sin(np.radians(theta)))
     demodulated_grid = near_grid * fraunhoffer_phase_factor
 
-    #padding
-    npad = [1024, 1024] 
+    #padding for finer res of fft
+    npad = [N_mirror, N_mirror] 
     f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
 
-    padded_center = 512
+    padded_center = N_mirror // 2
     row_start = padded_center - (Ny // 2)
     col_start = padded_center - (Nx // 2)
 
@@ -256,9 +256,9 @@ def fraunhofer(theta, k, near_grid, mirror_coord):
     norm = np.abs(obs_plane) ** 2
 
     #helps with ensuring when the padding is changed the physical spacing is too
-    dfx = 1 / (1024 * dx)
+    dfx = 1 / (N_mirror * dx)
 
-    dfy = 1/ (1024 * dy)
+    dfy = 1/ (N_mirror * dy)
 
     #integral normalization
     total_integral = np.sum(norm) * dfx * dfy
@@ -309,9 +309,9 @@ else:
 
 non_flat = apply_phase_array_nonflat(k, near, new_mirror_z)
 
-I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhofer(theta_1, k, non_flat, mirror_coord)
+I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, non_flat, mirror_coord)
 
-I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(theta_1, k, near, mirror_coord)
+I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
 
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
