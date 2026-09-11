@@ -480,9 +480,11 @@ difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 
 
 # preparation for 2d gauss
+I_far_intensity = np.abs(I_far) ** 2
+
 xy_input = np.vstack((X2.ravel(), Y2.ravel()))
-ydata = difference_fft_integral.ravel()
-peak_height = np.max(difference_fft_integral)
+ydata = I_far_intensity.ravel()
+peak_height = np.max(I_far_intensity)
 omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
 
 #curve fit 
@@ -507,7 +509,7 @@ print(f"Data saved to: {data_name}")
 #optimized parameters then reshape
 fit_map_flat = gaussian_fit(xy_input, *popt)
 fit_map_2d = fit_map_flat.reshape(X2.shape)
-residual_map = difference_fft_integral - fit_map_2d
+residual_map = I_far_intensity - fit_map_2d
 
 #axis adjustment 
 x_min, x_max = -x_degree, x_degree
@@ -530,7 +532,7 @@ folder_name = os.path.join(parent_folder, run_name)
 print(f"Graphs saved to: {folder_name}")
 
 #create list of to call functions
-type_of_mirror_analysis = "Flat"
+type_of_mirror_analysis = "Non-Flat"
 far_field = np.abs(I_far)**2
 
 #!!! edit made to accomadate just 2d gaussian for flat mirror
