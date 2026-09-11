@@ -19,8 +19,6 @@ N = 125 #ideally(400)nope ideally (125)
 N_mirror = 2048
 radius = .25 #500 mm across!! (.25) aperture
 
-#mirror
-
 #window size created for dx adjustments (in far field ect)
 window_size = (radius * 2)
 dx = window_size/N
@@ -105,7 +103,7 @@ def load_points(filename):
 
 def bilinear_interpolation(mirror_data_1):
     #import data points
-    Cold = load_points(r"E:\BICEP\BICEP_MIRROR\BICEP_MIRROR\cold.txt")
+    Cold = load_points(r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\cold.txt")
 
     space = Cold[["X", "Y"]].to_numpy()
     depth = Cold["Z (um)"].to_numpy() #change to mm soon!!!!!!
@@ -259,33 +257,33 @@ def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
     # Matrix expansion (precision matrix)
     exponent = -0.5 * (r_x2 * (x - mu_x)**2 + 2 * r_xy2 * (x - mu_x) * (y - mu_y) + r_y2 * (y - mu_y)**2)
     
-    # 1/omega amplitude multiplier
-    intensity_difference = ((1.0 / omega) * np.exp(exponent)).ravel()
+    # 1/omega amplitude multiplier !!!!!! might just need to be omega instead of divided by omega
+    intensity_difference = ((1 / omega) * np.exp(exponent)).ravel()
 
     return intensity_difference
 
-def plot_2d_gaussian(difference_fft_integral, X2, Y2, fit_map_2d, residual_map, folder_name):
+def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, folder_name):
     #plotting 2d gaussian fit to the normalized integral difference
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
     #uniform color scale
-    v_min = np.min(difference_fft_integral)
-    v_max = np.max(difference_fft_integral)
+    v_min = np.min(initial_thing_to_plot)
+    v_max = np.max(initial_thing_to_plot)
 
     #raw sim data
-    im1 = axes[0].pcolormesh(X2, Y2, difference_fft_integral, vmin=v_min, vmax=v_max, shading='auto')
-    axes[0].set_title("Integral Difference")
+    im1 = axes[0].pcolormesh(X2, Y2, initial_thing_to_plot, vmin=v_min, vmax=v_max, shading='auto')
+    axes[0].set_title(type_of_mirror_analysis)
     axes[0].set_xlabel("Frequency Coordinates")
     fig.colorbar(im1, ax=axes[0])
     axes[0].set_xlim(-4,4)
     axes[0].set_ylim(-4,4)
 
     #gaussian
-    im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, vmin=v_min, vmax=v_max, shading='auto')
+    im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, shading='auto')
     axes[1].set_title("Gaussian Fit")
     axes[1].set_xlabel("Frequency Coordinates")
     fig.colorbar(im2, ax=axes[1])
-    axes[1].set_xlim(-4,4)
+    axes[1].set_xlim(-4,4) #!!!!!!!!!!! check that these arent skewing the data (can use .min .max instead)
     axes[1].set_ylim(-4,4)
 
     #residuals (raw - gaussian)
@@ -380,7 +378,7 @@ def plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft,I_far
     plt.show()
     plt.close()
 
-def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, foldername):
+def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, folder_name):
     #new printing layout six side by side
     fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
 
@@ -425,7 +423,7 @@ def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, 
     # far_phase.set_ylim(-3,3)
 
     plt.tight_layout()
-    plt.savefig(folder_name)
+    plt.savefig(folder_name) ####savefig to save_path when save_path is == true or somethin
     plt.show()
     plt.close()
 
@@ -462,14 +460,24 @@ else:
 
 non_flat = apply_phase_array_nonflat(k, near, new_mirror_z)
 
+#non flat specs
 I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, non_flat, mirror_coord)
 
+# check_x, check_y = X2, Y2 
+
+#flat specs
 I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
+
+#check variables are the same
+# if check_x == X2 and check_y == Y2:
+#     print("ALL GOOD")
 
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
 difference_fft_peak = (normalize_orig_peak - normalize_peak).real
 difference_fft_integral = (normalize_orig_integral - normalize_integral).real
+
+
 
 # preparation for 2d gauss
 xy_input = np.vstack((X2.ravel(), Y2.ravel()))
@@ -483,7 +491,7 @@ popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_gu
 optimized_omega, opt_mu_x, opt_mu_y, opt_r_x2, opt_r_y2, opt_r_xy2 = popt
 
 #exporting information about comparision graphs to a txt file
-data_folder = r"E:\BICEP\BICEP_MIRROR\BICEP_MIRROR\Data"
+data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
 data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}.txt"
 data_name = os.path.join(data_folder, data_run_name)
 
@@ -513,17 +521,40 @@ else:
     y_min, y_max = -y_degree, y_degree
 
 #printing system
-parent_folder = r"E:\BICEP\BICEP_MIRROR\BICEP_MIRROR\Graphs"
+parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
 run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}"
 folder_name = os.path.join(parent_folder, run_name)
 
-os.makedirs(folder_name, exist_ok=True)
+# os.makedirs(folder_name, exist_ok=True)
 
 print(f"Graphs saved to: {folder_name}")
 
 #create list of to call functions
-tasks = [(lambda path: plot_2d_gaussian(difference_fft_integral, X2, Y2, fit_map_2d, residual_map, path), os.path.join(folder_name, "Gaussian.png")), (lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), os.path.join(folder_name, "Normalization.png")), (lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, path), os.path.join(folder_name, "FFT_compare.png")), (lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, path), os.path.join(folder_name, "Plots_check.png"))]
+type_of_mirror_analysis = "Flat"
+far_field = np.abs(I_far)**2
+
+#!!! edit made to accomadate just 2d gaussian for flat mirror
+tasks = [
+
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, folder_name), os.path.join(folder_name, "Gaussian.png")),
+
+          
+(lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, folder_name), os.path.join(folder_name, "Normalization.png")),
+
+
+(lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, folder_name), os.path.join(folder_name, "FFT_compare.png")), 
+
+
+(lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, folder_name), os.path.join(folder_name, "Plots_check.png"))
+
+]
 
 #call the functions to save them in the graphs folder
 for function, file_path in tasks:
     function(file_path)
+
+
+#!!!!!!!!!!! to fix gaussian try
+#fit_map_2d = np.reshape(fit_map_2d, X2.shape)
+
+#could be saving by taking a 2d vector grid into a 1D vector
