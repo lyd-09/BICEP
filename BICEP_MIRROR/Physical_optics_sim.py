@@ -251,20 +251,56 @@ def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
 
     return obs_plane, normalized_integral, normalized_peak, x_limit_deg, y_limit_deg, X2, Y2
 
-def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
-    x, y = xy
+def gaussian_fit(M, omega, mu_x, mu_y, xx, yy, xy):
+    x, y = M
+    dx = x - mu_x
+    dy = y - mu_y
 
+    #determinatnt
+    det = xx * yy - xy**2
+
+    a = yy / det
+    b = -xy / det
+    c = xx / det
+    
     # Matrix expansion (precision matrix)
-    exponent = -0.5 * (r_x2 * (x - mu_x)**2 + 2 * r_xy2 * (x - mu_x) * (y - mu_y) + r_y2 * (y - mu_y)**2)
+    exponent = -0.5 * (a * dx**2 + 2 * b * dx * dy + c * dy**2)
     
     # 1/omega amplitude multiplier !!!!!! might just need to be omega instead of divided by omega
-    intensity_difference = ((1 / omega) * np.exp(exponent)).ravel()
+    intensity_difference = omega * np.exp(exponent)
 
     return intensity_difference
 
-def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, save_path):
+def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, popt, save_path):
     #plotting 2d gaussian fit to the normalized integral difference
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    #extracting covariance elements
+    optimal_xx = popt[3]
+    optimal_yy = popt[4]
+    optimal_xy = popt[5]
+
+    #get covariance matrix and eigenvalues
+    cov_matrix = np.array([[optimal_xx, optimal_xy],
+                           [optimal_xy, optimal_yy]])
+    eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
+
+    #unwarped beam widths
+    true_x2 = eigenvalues[0]
+    true_y2 = eigenvalues[1]
+
+    dominant_vector = eigenvectors[:,1]
+    tilt_angle_degree = np.degrees(np.arctan2(dominant_vector[1],dominant_vector[0]))
+    #saving 6 data parameters
+    with open(data_name, "w") as file:
+        file.write(f"Peak amplitude (1/omega): {1.0 / optimized_omega:.5f}\n")
+        file.write(f"Center shift: (X: {opt_mu_x:.4f}, Y: {opt_mu_y:.4f})\n")
+        file.write(f"True physical widths (Tilt-corrected): \n")
+        file.write(f"r_x^2 = {true_x2:.2f}, r_y^2 = {true_y2:.4f}\n")
+        file.write(f"Beam tilt angle: {tilt_angle_degree:.2f}\n")
+        file.write(f"Covariance parameters: xx = {optimal_xx:.4f}, yy = {optimal_yy:.4f}, xy = {optimal_xy:.4f}\n")
+
+    print(f"Data saved to: {data_name}")
 
     #uniform color scale
     v_min = np.min(initial_thing_to_plot)
@@ -284,7 +320,7 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     axes[1].set_xlabel("Frequency Coordinates")
     fig.colorbar(im2, ax=axes[1])
     axes[1].set_xlim(-4,4) #!!!!!!!!!!! check that these arent skewing the data (can use .min .max instead)
-    axes[1].set_ylim(-6,6)
+    axes[1].set_ylim(-4,4)
 
     #residuals (raw - gaussian)
     im3 = axes[2].pcolormesh(X2, Y2, residual_map, shading='auto') 
@@ -488,11 +524,11 @@ peak_height = np.max(I_far_intensity)
 omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
 
 #curve fit 
-popt1, pcov1 = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0])
+popt1, pcov1 = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0.1])
 #optimized guess
-popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[popt1])
+popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=popt1)
 #then extract
-optimized_omega, opt_mu_x, opt_mu_y, opt_r_x2, opt_r_y2, opt_r_xy2 = popt
+optimized_omega, opt_mu_x, opt_mu_y, opt_xx, opt_yy, opt_xy = popt
 
 #manually name for rewrite error
 type_of_mirror_analysis = "Flat"
@@ -506,14 +542,6 @@ data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_thet
 data_name = os.path.join(data_folder, data_run_name)
 
 # os.makedirs(data_name, exist_ok=True)
-
-#saving 6 data parameters
-with open(data_name, "w") as file:
-    file.write(f"Peak amplitude (1/omega): {1.0 / optimized_omega:.5f}\n")
-    file.write(f"Center shift: (X: {opt_mu_x:.4f}, Y: {opt_mu_y:.4f})\n")
-    file.write(f"r_x^2 = {opt_r_x2:.2f}, r_y^2 = {opt_r_y2:.2f}, r_xy^2: {opt_r_xy2:.4f}\n")
-
-print(f"Data saved to: {data_name}")
 
 #optimized parameters then reshape
 fit_map_flat = gaussian_fit(xy_input, *popt)
@@ -546,7 +574,7 @@ print(f"Graphs saved to: {folder_name}")
 #!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
 #lambda folder_name instead??? for saving error
-(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, path), "Gaussian"),
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt, path), "Gaussian"),
 
           
 (lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), "Normalization"),
