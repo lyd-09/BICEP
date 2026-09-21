@@ -1,0 +1,83 @@
+\documentclass[twoside]{article}
+
+\usepackage{fullpage}
+
+\usepackage{amssymb}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\linespread{1.05}
+\usepackage{microtype}
+\usepackage[footnotesize,labelfont=bf]{caption}
+\usepackage{lettrine}
+\usepackage{graphicx}
+%\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{amsmath}
+%\usepackage[singlelinecheck=false, justification=raggedright]{caption}
+\usepackage{graphicx}
+
+
+
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage{sansmathfonts}
+
+%\usepackage[hmarginratio=1:1,top=20mm,bottom=30mm,right=15mm,left=15mm,columnsep=20pt]{geometry}
+%\usepackage{multicol} 
+\usepackage{booktabs}
+\usepackage{float} 
+\usepackage{subfigure}
+\usepackage{paralist} 
+\usepackage{dblfloatfix}
+
+\usepackage{bm}
+\usepackage{gensymb}
+
+\usepackage{hyperref}
+
+
+
+% \fancypagestyle{style2}{
+% \fancyhf{}
+% \rfoot[]{Page \thepage}
+% \lfoot[Page \thepage]{}
+% }
+
+\begin{document}
+% for flat
+
+
+\begin{equation}
+    \begin{bmatrix}
+        \sigma^2(1+P) & \sigma^2 C \\
+        \sigma^2 C & \sigma^2 (1-P)
+    \end{bmatrix}
+\end{equation}
+$For Flat Mirror:$
+$Peak amplitude (1/omgea): 219029754941.28745 \\
+Center shift: (X: -0.0000, Y: 0.0027)$
+% $\sigma^2 (1+p) = 0.53 \\ \sigma^2 (1-p) = 1.05 \\ \sigma^2 C: 0.0000$
+\begin{equation}
+    \begin{bmatrix}
+        0.53 & 0.0 \\
+        0.0 & 1.05
+    \end{bmatrix}
+\end{equation}
+% for non flat
+
+$For Non - Flat Mirror:$
+$ Peak amplitude (1/omega): 216830292020.89157 \\
+Center shift: (X: -0.1842, Y: -0.3519)$
+% $\sigma^2 (1+p) = 0.52 \\ \sigma^2 (1-p) = 1.05 \\ \sigma^2 C: -0.0001$
+\begin{equation}
+    \begin{bmatrix}
+        0.52 & -0.0001 \\
+        -0.0001 & 1.05
+    \end{bmatrix}
+\end{equation}
+
+
+\end{document}

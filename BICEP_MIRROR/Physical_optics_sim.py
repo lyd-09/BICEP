@@ -480,7 +480,7 @@ difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 
 
 # preparation for 2d gauss
-I_far_intensity = np.abs(I_far) ** 2
+I_far_intensity = np.abs(I_far_original) ** 2
 
 xy_input = np.vstack((X2.ravel(), Y2.ravel()))
 ydata = I_far_intensity.ravel()
@@ -488,17 +488,26 @@ peak_height = np.max(I_far_intensity)
 omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
 
 #curve fit 
-popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0])
+popt1, pcov1 = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0])
+#optimized guess
+popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[popt1])
 #then extract
 optimized_omega, opt_mu_x, opt_mu_y, opt_r_x2, opt_r_y2, opt_r_xy2 = popt
 
+#manually name for rewrite error
+type_of_mirror_analysis = "Flat"
+far_field = np.abs(I_far_original)**2
+
 #exporting information about comparision graphs to a txt file
 data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
-data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}.txt"
+
+#add in flat vs non flat 33
+data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}{type_of_mirror_analysis}.txt"
 data_name = os.path.join(data_folder, data_run_name)
 
 # os.makedirs(data_name, exist_ok=True)
 
+#saving 6 data parameters
 with open(data_name, "w") as file:
     file.write(f"Peak amplitude (1/omega): {1.0 / optimized_omega:.5f}\n")
     file.write(f"Center shift: (X: {opt_mu_x:.4f}, Y: {opt_mu_y:.4f})\n")
@@ -522,7 +531,7 @@ else:
 
     y_min, y_max = -y_degree, y_degree
 
-#printing system
+#printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
 run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}"
 folder_name = os.path.join(parent_folder, run_name)
@@ -532,12 +541,11 @@ folder_name = os.path.join(parent_folder, run_name)
 print(f"Graphs saved to: {folder_name}")
 
 #create list of to call functions
-type_of_mirror_analysis = "Non-Flat"
-far_field = np.abs(I_far)**2
+
 
 #!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
-
+#lambda folder_name instead??? for saving error
 (lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, folder_name), os.path.join(folder_name, "Gaussian.png")),
 
           
