@@ -262,7 +262,7 @@ def gaussian_fit(xy, omega, mu_x, mu_y, r_x2, r_y2, r_xy2):
 
     return intensity_difference
 
-def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, folder_name):
+def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, save_path):
     #plotting 2d gaussian fit to the normalized integral difference
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
@@ -284,7 +284,7 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     axes[1].set_xlabel("Frequency Coordinates")
     fig.colorbar(im2, ax=axes[1])
     axes[1].set_xlim(-4,4) #!!!!!!!!!!! check that these arent skewing the data (can use .min .max instead)
-    axes[1].set_ylim(-4,4)
+    axes[1].set_ylim(-6,6)
 
     #residuals (raw - gaussian)
     im3 = axes[2].pcolormesh(X2, Y2, residual_map, shading='auto') 
@@ -295,11 +295,11 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     axes[2].set_ylim(-4,4)
 
     plt.tight_layout()
-    plt.savefig(folder_name)
-    plt.show()
-    plt.close()
+    plt.savefig(save_path)
+    # plt.show()
+    # plt.close()
 
-def plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, folder_name):
+def plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, save_path):
     #plotting side by side for integral and peak
     limit_integral = max(abs(difference_fft_integral.min()), abs(difference_fft_integral.max()))
 
@@ -331,11 +331,11 @@ def plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_
     diff_phase2.set_ylim(-3,3)
 
     plt.tight_layout()
-    plt.savefig(folder_name)
-    plt.show()
-    plt.close()
+    plt.savefig(save_path)
+    # plt.show()
+    # plt.close()
 
-def plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft,I_far_original,I_far, folder_name):
+def plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft,I_far_original,I_far, save_path):
     #plotting the difference between far fields
     limit_integral = max(abs(difference_fft.min()), abs(difference_fft.max()))
 
@@ -374,11 +374,11 @@ def plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft,I_far
     diff_phase.set_ylim(-3,3)
 
     plt.tight_layout()
-    plt.savefig(folder_name)
-    plt.show()
-    plt.close()
+    plt.savefig(save_path)
+    # plt.show()
+    # plt.close()
 
-def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, folder_name):
+def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, save_path):
     #new printing layout six side by side
     fig, ((ap, close, far), (ap_phase, close_phase , far_phase)) = plt.subplots(2, 3, figsize=(8,12))
 
@@ -423,9 +423,9 @@ def aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, 
     # far_phase.set_ylim(-3,3)
 
     plt.tight_layout()
-    plt.savefig(folder_name) ####savefig to save_path when save_path is == true or somethin
-    plt.show()
-    plt.close()
+    plt.savefig(save_path) ####savefig to save_path when save_path is == true or somethin
+    # plt.show()
+    # plt.close()
 
 def mirror_plotting_cold():
     # mirror plotting
@@ -546,21 +546,22 @@ print(f"Graphs saved to: {folder_name}")
 #!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
 #lambda folder_name instead??? for saving error
-(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, folder_name), os.path.join(folder_name, "Gaussian.png")),
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, path), "Gaussian"),
 
           
-(lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, folder_name), os.path.join(folder_name, "Normalization.png")),
+(lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), "Normalization"),
 
 
-(lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, folder_name), os.path.join(folder_name, "FFT_compare.png")), 
+(lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, path),"FFT_compare"), 
 
 
-(lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, folder_name), os.path.join(folder_name, "Plots_check.png"))
+(lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, path),"Plots_check")
 
 ]
 
 #call the functions to save them in the graphs folder
-for function, file_path in tasks:
+for function, plot_name in tasks:
+    file_path = os.path.join(folder_name, f"{plot_name}.png")
     function(file_path)
 
 
