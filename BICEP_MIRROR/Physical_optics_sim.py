@@ -9,9 +9,11 @@ import pandas as pd
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator, RBFInterpolator, CloughTocher2DInterpolator
 from scipy.optimize import curve_fit
 from skimage.registration import phase_cross_correlation
+import datetime
 
 #can also abstract wavenumber to golabal variables
-
+#for unique save inputs
+date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 #aperture
 #change to [nXm] resolution
 N = 125 #ideally(400)nope ideally (125)
@@ -538,7 +540,7 @@ far_field = np.abs(I_far_original)**2
 data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
 
 #add in flat vs non flat 33
-data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}{type_of_mirror_analysis}.txt"
+data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}{type_of_mirror_analysis}{date_time}.txt"
 data_name = os.path.join(data_folder, data_run_name)
 
 # os.makedirs(data_name, exist_ok=True)
@@ -574,16 +576,16 @@ print(f"Graphs saved to: {folder_name}")
 #!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
 #lambda folder_name instead??? for saving error
-(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt, path), "Gaussian"),
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt, path), f"Gaussian{date_time}"),
 
           
-(lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), "Normalization"),
+(lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), f"Normalization{date_time}"),
 
 
-(lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, path),"FFT_compare"), 
+(lambda path: plot_difference_between_ffts(x_min,x_max, y_min, y_max, difference_fft_integral,I_far_original,I_far, path),f"FFT_compare{date_time}"), 
 
 
-(lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, path),"Plots_check")
+(lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, path),f"Plot Check{date_time}")
 
 ]
 
