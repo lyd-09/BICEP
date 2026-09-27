@@ -344,6 +344,26 @@ Scalar diffraction theory
 Coordinate rotation matrix to fix FFT stretching in gaussian elliptical
 Need to rotate the plane in the frequency domain, due to FFT
 Created from tilt in mirror plane. 
+A matrix like the one below can be considered:
+\begin{equation}
+    \begin{bmatrix}
+        E_{xx} & E_{xy}\\
+        E_{xy} & E_{yy}
+    \end{bmatrix}
+\end{equation}
+
+Where the variables mean the following:
+\begin{equation}
+    E_{xx} = \sigma_{x}^2 cos^2(\theta) + \sigma_{y}^2 sin^2(\theta)
+\end{equation}
+\begin{equation}
+    E_{yy} = \sigma_{x}^2 sin^2(\theta) + \sigma_{y}^2 cos^2(\theta)
+\end{equation}
+\begin{equation}
+    E_{xy} = (\sigma_{x}^2 - \sigma_{y}^2) sin(\theta) cos(\theta)
+\end{equation}
+
+$fy_prjected$ helps to counterbalance the inverse spatial compression alighning the covariance matrix back into circular dimensions.
 
 
 % Global scaling for FFT:

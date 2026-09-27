@@ -206,7 +206,7 @@ def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
     dx = mirror_coord[0] / col_mirror
     dy = mirror_coord[1] / rows_in_mirror
 
-# mesh of near_grid (360, 540) # Ny = 360, Nx = 540
+    # mesh of near_grid (360, 540) # Ny = 360, Nx = 540
     Ny, Nx = near_grid.shape
     y_vec = np.arange(-Ny//2, Ny//2) * dy
     x_vec = np.arange(-Nx//2, Nx//2) * dx
@@ -217,20 +217,23 @@ def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
     demodulated_grid = near_grid * fraunhoffer_phase_factor
 
     #padding for finer res of fft
-    npad = [N_mirror, N_mirror] 
-    f2 = np.zeros(shape=(npad[0], npad[1]), dtype=complex)
+    Ny_pad = N_mirror
+    Nx_pad = int(N_mirror * (Nx / Ny)) #spacing for rectangular mirror (1.5 step scaling)
 
-    padded_center = N_mirror // 2
-    row_start = padded_center - (Ny // 2)
-    col_start = padded_center - (Nx // 2)
+    f2 = np.zeros((Ny_pad, Nx_pad), dtype=complex)
+
+    row_start = (Ny_pad //2) - (Ny // 2)
+    col_start = (Nx_pad //2) - (Nx //2)
 
     f2[row_start : row_start + Ny, col_start : col_start + Nx] = demodulated_grid
 
     obs_plane = np.fft.ifftshift(np.fft.fft2(np.fft.fftshift(f2)))
-
-    fx = np.fft.fftshift(np.fft.fftfreq(npad[1], d=dx))
-    fy = np.fft.fftshift(np.fft.fftfreq(npad[0], d=dy))
-    X2, Y2 = np.meshgrid(fx, fy)
+    
+    fx = np.fft.fftshift(np.fft.fftfreq(Nx_pad, d=dx))
+    fy = np.fft.fftshift(np.fft.fftfreq(Ny_pad, d=dy))
+    fy_projected = fy / np.cos(np.radians(theta))
+    # X2, Y2 = np.meshgrid(fx, fy)
+    X2, Y2 = np.meshgrid(fx, fy_projected)
 
     x_limit_deg = np.degrees(0.5 * lamda / dx)
     y_limit_deg = np.degrees(0.5 * lamda / dy)
@@ -239,9 +242,10 @@ def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
     norm = np.abs(obs_plane) ** 2
 
     #helps with ensuring when the padding is changed the physical spacing is too
-    dfx = 1 / (N_mirror * dx)
 
-    dfy = 1/ (N_mirror * dy)
+    dfx = 1 / (Nx_pad * dx)
+    
+    dfy = 1/ (Ny_pad * dy)
 
     #integral normalization
     total_integral = np.sum(norm) * dfx * dfy
@@ -253,25 +257,25 @@ def fraunhofer(N_mirror,theta, k, near_grid, mirror_coord):
 
     return obs_plane, normalized_integral, normalized_peak, x_limit_deg, y_limit_deg, X2, Y2
 
-def gaussian_fit(M, omega, mu_x, mu_y, xx, yy, xy):
+def gaussian_fit(M, omega, mu_x, mu_y, sigma_x, sigma_y, theta):
     x, y = M
     dx = x - mu_x
     dy = y - mu_y
 
-    #determinatnt
-    det = xx * yy - xy**2
+    cos_t = np.cos(theta)
+    sin_t = np.sin(theta)
 
-    a = yy / det
-    b = -xy / det
-    c = xx / det
+    # rotated 2D Gaussian coefficients
+    a = (cos_t**2 / (2 * sigma_x**2)) + (sin_t**2 / (2 * sigma_y**2))
+    b = (-np.sin(2 * theta) / (4 * sigma_x**2)) + (np.sin(2 * theta) / (4 * sigma_y**2))
+    c = (sin_t**2 / (2 * sigma_x**2)) + (cos_t**2 / (2 * sigma_y**2))
+
+    exponent = -(a * dx**2 + 2 * b * dx * dy + c * dy**2)
     
-    # Matrix expansion (precision matrix)
-    exponent = -0.5 * (a * dx**2 + 2 * b * dx * dy + c * dy**2)
-    
-    # 1/omega amplitude multiplier !!!!!! might just need to be omega instead of divided by omega
     intensity_difference = omega * np.exp(exponent)
 
     return intensity_difference
+
 
 def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_map_2d, residual_map, popt, save_path):
     #plotting 2d gaussian fit to the normalized integral difference
@@ -307,30 +311,48 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     #uniform color scale
     v_min = np.min(initial_thing_to_plot)
     v_max = np.max(initial_thing_to_plot)
+    zoom_factor = 5.0  
+
+    # Center the zoom box on your optimized center shifts
+    x_center = opt_mu_x
+    y_center = opt_mu_y
+
+    # Set the new bounding box dimensions based on the actual beam sizes
+    x_min = x_center - (zoom_factor * opt_sigma_x)
+    x_max = x_center + (zoom_factor * opt_sigma_x)
+
+    y_min = y_center - (zoom_factor * opt_sigma_y)
+    y_max = y_center + (zoom_factor * opt_sigma_y)
 
     #raw sim data
     im1 = axes[0].pcolormesh(X2, Y2, initial_thing_to_plot, vmin=v_min, vmax=v_max, shading='auto')
     axes[0].set_title(type_of_mirror_analysis)
     axes[0].set_xlabel("Frequency Coordinates")
     fig.colorbar(im1, ax=axes[0])
-    axes[0].set_xlim(-4,4)
-    axes[0].set_ylim(-4,4)
+    axes[0].set_xlim(x_min,x_max)
+    axes[0].set_ylim(y_min,y_max)
 
     #gaussian
     im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, shading='auto')
     axes[1].set_title("Gaussian Fit")
     axes[1].set_xlabel("Frequency Coordinates")
     fig.colorbar(im2, ax=axes[1])
-    axes[1].set_xlim(-4,4) #!!!!!!!!!!! check that these arent skewing the data (can use .min .max instead)
-    axes[1].set_ylim(-4,4)
+    axes[1].set_xlim(x_min,x_max) 
+    axes[1].set_ylim(y_min,y_max)
+
 
     #residuals (raw - gaussian)
-    im3 = axes[2].pcolormesh(X2, Y2, residual_map, shading='auto') 
+    im3 = axes[2].pcolormesh(X2, Y2, residual_map, vmin=v_min, vmax=v_max, shading='auto') 
     axes[2].set_title("Residual Errors")
     axes[2].set_xlabel("Frequency Coordinates")
     fig.colorbar(im3, ax=axes[2])
-    axes[2].set_xlim(-4,4)
-    axes[2].set_ylim(-4,4)
+    axes[2].set_xlim(x_min,x_max)
+    axes[2].set_ylim(y_min,y_max)
+
+    axes[0].set_aspect('equal', 'box')
+    axes[1].set_aspect('equal', 'box')
+    axes[2].set_aspect('equal', 'box')
+
 
     plt.tight_layout()
     plt.savefig(save_path)
@@ -506,10 +528,6 @@ I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhof
 #flat specs
 I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
 
-#check variables are the same
-# if check_x == X2 and check_y == Y2:
-#     print("ALL GOOD")
-
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
 difference_fft_peak = (normalize_orig_peak - normalize_peak).real
@@ -520,17 +538,49 @@ difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 # preparation for 2d gauss
 I_far_intensity = np.abs(I_far_original) ** 2
 
+
+# inputs
 xy_input = np.vstack((X2.ravel(), Y2.ravel()))
 ydata = I_far_intensity.ravel()
-peak_height = np.max(I_far_intensity)
+
+# initial guesses based on data distribution
+peak_height = float(np.max(I_far_intensity))
 omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
 
-#curve fit 
-popt1, pcov1 = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=[omega_guess,0,0,1,1,0.1])
-#optimized guess
-popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata = ydata, p0=popt1)
-#then extract
-optimized_omega, opt_mu_x, opt_mu_y, opt_xx, opt_yy, opt_xy = popt
+# where the beam is strong to guess center shifts
+total_mass = np.sum(I_far_intensity) if np.sum(I_far_intensity) > 0 else 1.0
+mu_x_guess = np.sum(X2 * I_far_intensity) / total_mass
+mu_y_guess = np.sum(Y2 * I_far_intensity) / total_mass
+
+# Estimate physical beam widths 
+sigma_x_guess = np.sqrt(np.sum((X2 - mu_x_guess)**2 * I_far_intensity) / total_mass)
+sigma_y_guess = np.sqrt(np.sum((Y2 - mu_y_guess)**2 * I_far_intensity) / total_mass)
+
+theta_guess = np.radians(theta_1) 
+p0 = [omega_guess, mu_x_guess, mu_y_guess, sigma_x_guess, sigma_y_guess, theta_guess]
+
+# physical bounds tracking
+max_x_span = float(np.ptp(X2))
+max_y_span = float(np.ptp(Y2))
+
+lower_bounds = [0,          -max_x_span, -max_y_span, 1e-12,        1e-12,        -np.pi]
+upper_bounds = [np.inf,      max_x_span,  max_y_span, max_x_span,   max_y_span,   np.pi]
+bounds = (lower_bounds, upper_bounds)
+
+popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata=ydata, p0=p0, bounds=bounds)
+optimized_omega, opt_mu_x, opt_mu_y, opt_sigma_x, opt_sigma_y, opt_theta = popt
+
+# physical variables to covariance matrix layout
+cos_t = np.cos(opt_theta)
+sin_t = np.sin(opt_theta)
+
+# from principal widths to covariance metrics
+optimal_xx = (opt_sigma_x**2 * cos_t**2) + (opt_sigma_y**2 * sin_t**2)
+optimal_yy = (opt_sigma_x**2 * sin_t**2) + (opt_sigma_y**2 * cos_t**2)
+# rotation layout
+optimal_xy = (opt_sigma_x**2 - opt_sigma_y**2) * sin_t * cos_t 
+
+popt_legacy = np.array([optimized_omega, opt_mu_x, opt_mu_y, optimal_xx, optimal_yy, optimal_xy])
 
 #manually name for rewrite error
 type_of_mirror_analysis = "Flat"
@@ -551,15 +601,9 @@ fit_map_2d = fit_map_flat.reshape(X2.shape)
 residual_map = I_far_intensity - fit_map_2d
 
 #axis adjustment 
-x_min, x_max = -x_degree, x_degree
-
-if theta_1 == 45:
-
-    y_min, y_max = -y_degree * (2 ** 0.5), y_degree * (2 ** 0.5)
-
-else:
-
-    y_min, y_max = -y_degree, y_degree
+# x_min, x_max = -x_degree, x_degree
+x_min, x_max = float(X2.min()), float(X2.max())
+y_min, y_max = float(Y2.min()), float(Y2.max())
 
 #printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
@@ -576,9 +620,9 @@ print(f"Graphs saved to: {folder_name}")
 #!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
 #lambda folder_name instead??? for saving error
-(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt, path), f"Gaussian{date_time}"),
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt_legacy, path), f"Gaussian{date_time}"),
 
-          
+        
 (lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), f"Normalization{date_time}"),
 
 
@@ -593,9 +637,3 @@ tasks = [
 for function, plot_name in tasks:
     file_path = os.path.join(folder_name, f"{plot_name}.png")
     function(file_path)
-
-
-#!!!!!!!!!!! to fix gaussian try
-#fit_map_2d = np.reshape(fit_map_2d, X2.shape)
-
-#could be saving by taking a 2d vector grid into a 1D vector
