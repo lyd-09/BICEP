@@ -342,7 +342,7 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
 
 
     #residuals (raw - gaussian)
-    im3 = axes[2].pcolormesh(X2, Y2, residual_map, vmin=v_min, vmax=v_max, shading='auto') 
+    im3 = axes[2].pcolormesh(X2, Y2, residual_map, shading='auto') 
     axes[2].set_title("Residual Errors")
     axes[2].set_xlabel("Frequency Coordinates")
     fig.colorbar(im3, ax=axes[2])
@@ -528,6 +528,10 @@ I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhof
 #flat specs
 I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
 
+#gaussian graphs change
+change_type_of_analysis = I_far
+type_of_mirror_analysis = "Non-flat"
+
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
 difference_fft_peak = (normalize_orig_peak - normalize_peak).real
@@ -536,7 +540,7 @@ difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 
 
 # preparation for 2d gauss
-I_far_intensity = np.abs(I_far_original) ** 2
+I_far_intensity = np.abs(change_type_of_analysis) ** 2
 
 
 # inputs
@@ -583,8 +587,7 @@ optimal_xy = (opt_sigma_x**2 - opt_sigma_y**2) * sin_t * cos_t
 popt_legacy = np.array([optimized_omega, opt_mu_x, opt_mu_y, optimal_xx, optimal_yy, optimal_xy])
 
 #manually name for rewrite error
-type_of_mirror_analysis = "Flat"
-far_field = np.abs(I_far_original)**2
+far_field = np.abs(change_type_of_analysis)**2
 
 #exporting information about comparision graphs to a txt file
 data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
@@ -607,7 +610,7 @@ y_min, y_max = float(Y2.min()), float(Y2.max())
 
 #printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
-run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}"
+run_name = f"fresnel_near_field_N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}"
 folder_name = os.path.join(parent_folder, run_name)
 
 # os.makedirs(folder_name, exist_ok=True)
@@ -615,11 +618,7 @@ folder_name = os.path.join(parent_folder, run_name)
 print(f"Graphs saved to: {folder_name}")
 
 #create list of to call functions
-
-
-#!!! edit made to accomadate just 2d gaussian for flat mirror
 tasks = [
-#lambda folder_name instead??? for saving error
 (lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt_legacy, path), f"Gaussian{date_time}"),
 
         

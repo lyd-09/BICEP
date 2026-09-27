@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  27 SEP 2026 18:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.9.20)  27 SEP 2026 19:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -764,6 +764,11 @@ Package fancyhdr Warning: \headheight is too small (0.0pt):
 
 [3]
 
+LaTeX Font Warning: Font shape `T1/xcmss/b/n' in size <10> not available
+(Font)              Font shape `T1/xcmss/bx/n' tried instead on input line 384.
+
+
+
 
 Package fancyhdr Warning: \headheight is too small (0.0pt): 
 (fancyhdr)                Make it at least 12.0pt, for example:
@@ -780,7 +785,16 @@ Package fancyhdr Warning: \headheight is too small (0.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
 
-[5] (documentation.aux)
+[5]
+
+
+Package fancyhdr Warning: \headheight is too small (0.0pt): 
+(fancyhdr)                Make it at least 12.0pt, for example:
+(fancyhdr)                \setlength{\headheight}{12.0pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-12.0pt}.
+
+[6] (documentation.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-08-13>
@@ -789,17 +803,17 @@ Package rerunfilecheck Info: File `documentation.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 16967 strings out of 468133
- 279382 string characters out of 5430712
- 732371 words of memory out of 5000000
- 45212 multiletter control sequences out of 15000+600000
- 654253 words of font info for 148 fonts, out of 8000000 for 9000
+ 16978 strings out of 468133
+ 279534 string characters out of 5430712
+ 735460 words of memory out of 5000000
+ 45216 multiletter control sequences out of 15000+600000
+ 655162 words of font info for 151 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,1068b,486s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi5.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/ssmsbm10.pfb>
-Output written on documentation.pdf (5 pages, 193835 bytes).
+ 75i,12n,79p,1068b,505s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmss8.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssex10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi5.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmssmi7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy10.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/cmsssy7.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfss1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx0800.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1000.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1200.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfsx1728.pfb><C:/Users/lj350/AppData/Local/Programs/MiKTeX/fonts/type1/public/sansmathfonts/ssmsbm10.pfb>
+Output written on documentation.pdf (6 pages, 220431 bytes).
 PDF statistics:
- 121 PDF objects out of 1000 (max. 8388607)
- 20 named destinations out of 1000 (max. 500000)
- 26625 words of extra memory for PDF output out of 29859 (max. 10000000)
+ 131 PDF objects out of 1000 (max. 8388607)
+ 22 named destinations out of 1000 (max. 500000)
+ 28673 words of extra memory for PDF output out of 29859 (max. 10000000)
 

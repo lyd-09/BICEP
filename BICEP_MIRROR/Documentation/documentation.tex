@@ -374,6 +374,26 @@ $fy_prjected$ helps to counterbalance the inverse spatial compression alighning 
 % \begin{equation*}
 %     \Delta \theta_x = \frac{\lambda}{N \cdot \Delta x}
 % \end{equation*}
+\section*{\centering{\textbf{Analysis}}}
+\begin{table}[h]
+\centering
+\caption{Far-Field Comparison of Original vs. New Near-Field Surfaces}
+\label{tab:surface_comparison}
+\begin{tabular}{l c c r}
+\hline
+\textbf{Beam Parameter} & \textbf{Original Surface} & \textbf{New Surface} & \textbf{Physical Impact} \\
+\hline
+Peak Amplitude ($1/\omega$) & 0.47528 & 0.45761 & -3.7\% Power attenuation \\
+Center Shift X ($\mu_x$) & -0.0000 & -0.2045 & Subtle horizontal steering \\
+Center Shift Y ($\mu_y$) & -0.0001 & -0.4960 & Dominant vertical steering \\
+True Width $r_x^2$ & 1.9000 & 1.9000 & No horizontal defocusing \\
+True Width $r_y^2$ & 1.9127 & 1.9666 & +2.8\% Beam stretching \\
+Beam Tilt Angle ($\theta$) & 45.00$^\circ$ & 45.00$^\circ$ & Aligned to projection axis \\
+Covariance Term ($xy$) & 0.0077 & 0.0313 & Structural asymmetry increase \\
+\hline
+\end{tabular}
+\end{table}
+
 
 
 
