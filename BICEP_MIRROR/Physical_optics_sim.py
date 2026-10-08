@@ -529,8 +529,8 @@ I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhof
 I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
 
 #gaussian graphs change
-change_type_of_analysis = I_far
-type_of_mirror_analysis = "Non-flat"
+change_type_of_analysis = I_far_original
+type_of_mirror_analysis = "Flat"
 
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
@@ -605,8 +605,18 @@ residual_map = I_far_intensity - fit_map_2d
 
 #axis adjustment 
 # x_min, x_max = -x_degree, x_degree
-x_min, x_max = float(X2.min()), float(X2.max())
-y_min, y_max = float(Y2.min()), float(Y2.max())
+x_min, x_max = -x_degree, x_degree
+
+if theta_1 == 45:
+
+    y_min, y_max = -y_degree * (2 ** 0.5), y_degree * (2 ** 0.5)
+
+else:
+
+    y_min, y_max = -y_degree, y_degree
+    
+# x_min, x_max = float(X2.min()), float(X2.max())
+# y_min, y_max = float(Y2.min()), float(Y2.max())
 
 #printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
