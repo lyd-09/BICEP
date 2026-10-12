@@ -29,7 +29,7 @@ theta_1 =  45 #45 degrees
 lamda = 2e-3 #3mm
 #mainly for side by side comparisons
 theta_2 = 0
-
+type_of_mirror_analysis = "Flat"
 
 mirror_coord = np.array([2.7,1.8,4]) #m 
 #but i might be having to use mm.....
@@ -281,22 +281,34 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     #plotting 2d gaussian fit to the normalized integral difference
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    #extracting covariance elements
-    optimal_xx = popt[3]
-    optimal_yy = popt[4]
-    optimal_xy = popt[5]
+    #extracting covariance element
+    optimized_omega = popt[0]
+    opt_mu_x        = popt[1]
+    opt_mu_y        = popt[2]
+    optimal_xx      = popt[3]
+    optimal_yy      = popt[4]
+    optimal_xy      = popt[5]
 
-    #get covariance matrix and eigenvalues
-    cov_matrix = np.array([[optimal_xx, optimal_xy],
-                           [optimal_xy, optimal_yy]])
+    #precision matrix from optimized parameters
+    precision_matrix = np.array([[optimal_xx, optimal_xy],
+                                [optimal_xy, optimal_yy]])
+
+    # precision to true covariance
+    cov_matrix = np.linalg.inv(precision_matrix) * 0.5
+
+    # physical parameters
     eigenvalues, eigenvectors = np.linalg.eigh(cov_matrix)
 
-    #unwarped beam widths
-    true_x2 = eigenvalues[0]
+    true_x2 = eigenvalues[0] 
     true_y2 = eigenvalues[1]
+    opt_sigma_x = np.sqrt(true_x2)
+    opt_sigma_y = np.sqrt(true_y2)
 
-    dominant_vector = eigenvectors[:,1]
-    tilt_angle_degree = np.degrees(np.arctan2(dominant_vector[1],dominant_vector[0]))
+    dominant_vector = eigenvectors[:, 1]
+    tilt_angle_degree = np.degrees(np.arctan2(dominant_vector[1], dominant_vector[0]))
+
+    if tilt_angle_degree < 0:
+        tilt_angle_degree += 180
     #saving 6 data parameters
     with open(data_name, "w") as file:
         file.write(f"Peak amplitude (1/omega): {1.0 / optimized_omega:.5f}\n")
@@ -304,20 +316,20 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
         file.write(f"True physical widths (Tilt-corrected): \n")
         file.write(f"r_x^2 = {true_x2:.2f}, r_y^2 = {true_y2:.4f}\n")
         file.write(f"Beam tilt angle: {tilt_angle_degree:.2f}\n")
-        file.write(f"Covariance parameters: xx = {optimal_xx:.4f}, yy = {optimal_yy:.4f}, xy = {optimal_xy:.4f}\n")
+        file.write(f"Precision parameters: xx = {optimal_xx:.4f}, yy = {optimal_yy:.4f}, xy = {optimal_xy:.4f}\n")
 
     print(f"Data saved to: {data_name}")
 
     #uniform color scale
-    v_min = np.min(initial_thing_to_plot)
-    v_max = np.max(initial_thing_to_plot)
+    v_min = np.min(I_far_intensity_normalized)
+    v_max = np.max(I_far_intensity_normalized)
     zoom_factor = 5.0  
+    initial_thing_to_plot_normalized = initial_thing_to_plot/ np.max(initial_thing_to_plot)
 
-    # Center the zoom box on your optimized center shifts
     x_center = opt_mu_x
     y_center = opt_mu_y
 
-    # Set the new bounding box dimensions based on the actual beam sizes
+    # new dimensions based on the actual beam sizes
     x_min = x_center - (zoom_factor * opt_sigma_x)
     x_max = x_center + (zoom_factor * opt_sigma_x)
 
@@ -325,7 +337,7 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     y_max = y_center + (zoom_factor * opt_sigma_y)
 
     #raw sim data
-    im1 = axes[0].pcolormesh(X2, Y2, initial_thing_to_plot, vmin=v_min, vmax=v_max, shading='auto')
+    im1 = axes[0].pcolormesh(X2, Y2, initial_thing_to_plot_normalized, shading='auto',vmin=v_min,vmax=v_max)
     axes[0].set_title(type_of_mirror_analysis)
     axes[0].set_xlabel("Frequency Coordinates")
     fig.colorbar(im1, ax=axes[0])
@@ -333,7 +345,7 @@ def plot_2d_gaussian(type_of_mirror_analysis,initial_thing_to_plot, X2, Y2, fit_
     axes[0].set_ylim(y_min,y_max)
 
     #gaussian
-    im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, shading='auto')
+    im2 = axes[1].pcolormesh(X2, Y2, fit_map_2d, shading='auto',vmin=v_min,vmax=v_max)
     axes[1].set_title("Gaussian Fit")
     axes[1].set_xlabel("Frequency Coordinates")
     fig.colorbar(im2, ax=axes[1])
@@ -506,7 +518,7 @@ new_mirror_z = bilinear_interpolation(mirror_data_1)
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! computational save
 #most changed variables (N, theta_1, theta_2)
-cache_filename = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}.npy"
+cache_filename = f"fresnel_near_field_N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}.npy"
 
 if os.path.exists(cache_filename):
     print("File already found. Loading in Fresnel near-field grid")
@@ -522,30 +534,26 @@ non_flat = apply_phase_array_nonflat(k, near, new_mirror_z)
 
 #non flat specs
 I_far, normalize_integral, normalize_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, non_flat, mirror_coord)
-
-# check_x, check_y = X2, Y2 
+ 
 
 #flat specs
 I_far_original, normalize_orig_integral, normalize_orig_peak, x_degree, y_degree, X2, Y2 = fraunhofer(N_mirror,theta_1, k, near, mirror_coord)
 
 #gaussian graphs change
 change_type_of_analysis = I_far_original
-type_of_mirror_analysis = "Flat"
 
 #for non log plot 
 # difference_fft = (normalize_orig - normalize).real
 difference_fft_peak = (normalize_orig_peak - normalize_peak).real
 difference_fft_integral = (normalize_orig_integral - normalize_integral).real
 
-
-
 # preparation for 2d gauss
 I_far_intensity = np.abs(change_type_of_analysis) ** 2
-
+I_far_intensity_normalized = I_far_intensity / np.max(I_far_intensity)
 
 # inputs
 xy_input = np.vstack((X2.ravel(), Y2.ravel()))
-ydata = I_far_intensity.ravel()
+ydata = I_far_intensity_normalized.ravel()
 
 # initial guesses based on data distribution
 peak_height = float(np.max(I_far_intensity))
@@ -567,24 +575,33 @@ p0 = [omega_guess, mu_x_guess, mu_y_guess, sigma_x_guess, sigma_y_guess, theta_g
 max_x_span = float(np.ptp(X2))
 max_y_span = float(np.ptp(Y2))
 
-lower_bounds = [0,          -max_x_span, -max_y_span, 1e-12,        1e-12,        -np.pi]
-upper_bounds = [np.inf,      max_x_span,  max_y_span, max_x_span,   max_y_span,   np.pi]
+lower_bounds = [0,-max_x_span, -max_y_span, 1e-12,1e-12,-np.pi]
+upper_bounds = [np.inf, max_x_span, max_y_span, max_x_span, max_y_span, np.pi]
 bounds = (lower_bounds, upper_bounds)
 
 popt, pcov = curve_fit(gaussian_fit, xdata=xy_input, ydata=ydata, p0=p0, bounds=bounds)
 optimized_omega, opt_mu_x, opt_mu_y, opt_sigma_x, opt_sigma_y, opt_theta = popt
 
-# physical variables to covariance matrix layout
-cos_t = np.cos(opt_theta)
-sin_t = np.sin(opt_theta)
+peak_height = float(np.max(I_far_intensity_normalized)) # Now 1.0
+omega_guess = 1.0 / peak_height if peak_height != 0 else 1.0
 
-# from principal widths to covariance metrics
-optimal_xx = (opt_sigma_x**2 * cos_t**2) + (opt_sigma_y**2 * sin_t**2)
-optimal_yy = (opt_sigma_x**2 * sin_t**2) + (opt_sigma_y**2 * cos_t**2)
-# rotation layout
-optimal_xy = (opt_sigma_x**2 - opt_sigma_y**2) * sin_t * cos_t 
+total_mass = np.sum(I_far_intensity_normalized) if np.sum(I_far_intensity_normalized) > 0 else 1.0
+mu_x_guess = np.sum(X2 * I_far_intensity_normalized) / total_mass
+mu_y_guess = np.sum(Y2 * I_far_intensity_normalized) / total_mass
 
-popt_legacy = np.array([optimized_omega, opt_mu_x, opt_mu_y, optimal_xx, optimal_yy, optimal_xy])
+sigma_x_guess = np.sqrt(np.sum((X2 - mu_x_guess)**2 * I_far_intensity_normalized) / total_mass)
+sigma_y_guess = np.sqrt(np.sum((Y2 - mu_y_guess)**2 * I_far_intensity_normalized) / total_mass)
+theta_guess = np.radians(theta_1) 
+
+#taking physical guess and turning into matrix form
+cos_g = np.cos(theta_guess)
+sin_g = np.sin(theta_guess)
+
+xx_guess = (cos_g**2 / (2 * sigma_x_guess**2)) + (sin_g**2 / (2 * sigma_y_guess**2))
+yy_guess = (sin_g**2 / (2 * sigma_x_guess**2)) + (cos_g**2 / (2 * sigma_y_guess**2))
+xy_guess = 0.5 * (1 / sigma_x_guess**2 - 1 / sigma_y_guess**2) * sin_g * cos_g
+
+p0 = [omega_guess, mu_x_guess, mu_y_guess, xx_guess, yy_guess, xy_guess]
 
 #manually name for rewrite error
 far_field = np.abs(change_type_of_analysis)**2
@@ -596,12 +613,11 @@ data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
 data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}{type_of_mirror_analysis}{date_time}.txt"
 data_name = os.path.join(data_folder, data_run_name)
 
-# os.makedirs(data_name, exist_ok=True)
 
-#optimized parameters then reshape
+#optimized parameters then reshape #!!!!!!!!!NEEDS TO BE ADAPTABLE FOR TYPE OF ANALYSIS BEING DONE
 fit_map_flat = gaussian_fit(xy_input, *popt)
 fit_map_2d = fit_map_flat.reshape(X2.shape)
-residual_map = I_far_intensity - fit_map_2d
+residual_map = I_far_intensity_normalized - fit_map_2d
 
 #axis adjustment 
 # x_min, x_max = -x_degree, x_degree
@@ -614,9 +630,7 @@ if theta_1 == 45:
 else:
 
     y_min, y_max = -y_degree, y_degree
-    
-# x_min, x_max = float(X2.min()), float(X2.max())
-# y_min, y_max = float(Y2.min()), float(Y2.max())
+
 
 #printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
@@ -629,7 +643,7 @@ print(f"Graphs saved to: {folder_name}")
 
 #create list of to call functions
 tasks = [
-(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, popt_legacy, path), f"Gaussian{date_time}"),
+(lambda path: plot_2d_gaussian(type_of_mirror_analysis, far_field, X2, Y2, fit_map_2d, residual_map, p0, path), f"Gaussian{date_time}"),
 
         
 (lambda path: plot_integral_and_peak_normalization(x_min, x_max, y_min, y_max, difference_fft_integral,difference_fft_peak, path), f"Normalization{date_time}"),
@@ -641,6 +655,7 @@ tasks = [
 (lambda path: aperture_near_fft_plots(aperture, radius, near, length, width,I_far, x_min, x_max, y_min, y_max, path),f"Plot Check{date_time}")
 
 ]
+
 
 #call the functions to save them in the graphs folder
 for function, plot_name in tasks:

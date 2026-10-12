@@ -293,6 +293,12 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\jknappen\ec\ecsx100
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\vf\public\sansmathfonts\cmsmf8.vf
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmss8.tfm
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\sansmathfonts\cmsmfIPiXi8.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\vf\public\sansmathfonts\cmsmfbx10.vf
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmssbx10.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\sansmathfonts\cmsmfIPiXibx10.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\vf\public\sansmathfonts\cmsmfbx8.vf
+INPUT C:\Users\lj350\AppData\Local\MiKTeX\fonts\tfm\jknappen\sauter\cmssbx8.tfm
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\tfm\public\sansmathfonts\cmsmfIPiXibx8.tfm
 INPUT documentation.aux
 INPUT .\documentation.out
 INPUT .\documentation.out
@@ -300,6 +306,10 @@ INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\c
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmss10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmss8.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmss8.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmssbx10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmssbx10.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssbx8.pfb
+INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssbx8.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssex10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssex10.pfb
 INPUT C:\Users\lj350\AppData\Local\Programs\MiKTeX\fonts\type1\public\sansmathfonts\cmssmi10.pfb

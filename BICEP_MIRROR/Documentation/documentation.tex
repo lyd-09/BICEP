@@ -395,6 +395,64 @@ Covariance Term ($xy$) & 0.0077 & 0.0313 & Structural asymmetry increase \\
 \end{table}
 
 
+\[
+\text{exponent} = -\frac{1}{2} \mathbf{x}^T P \mathbf{x} = -\frac{1}{2} 
+\begin{bmatrix} dx & dy \end{bmatrix} 
+\begin{bmatrix} P_{xx} & P_{xy} \\ P_{xy} & P_{yy} \end{bmatrix} 
+\begin{bmatrix} dx \\ dy \end{bmatrix}
+\]
+
+
+
+\[
+\text{exponent} = -\left( \frac{P_{xx}}{2}dx^2 + P_{xy}dxdy + \frac{P_{yy}}{2}dy^2 \right)
+\]
+
+
+\[
+\text{exponent} = -(a \cdot dx^2 + 2b \cdot dxdy + c \cdot dy^2)
+\]
+
+
+\begin{align*}
+\frac{P_{xx}}{2} = a \quad &\Rightarrow \quad P_{xx} = 2a \\
+P_{xy} = 2b \quad &\Rightarrow \quad P_{xy} = 2b \\
+\frac{P_{yy}}{2} = c \quad &\Rightarrow \quad P_{yy} = 2c
+\end{align*}
+
+
+To compute the inverse of the Precision Matrix:
+
+\[
+\det(P) = (P_{xx} \cdot P_{yy}) - (P_{xy} \cdot P_{xy})
+\]
+
+Substituting:
+
+\[
+\det(P) = (2a \cdot 2c) - (2b \cdot 2b) = 4ac - 4b^2 = \mathbf{4(ac - b^2)}
+\]
+
+
+
+\[
+\Sigma = \begin{bmatrix} \sigma_{xx} & \sigma_{xy} \\ \sigma_{xy} & \sigma_{yy} \end{bmatrix} = \frac{1}{\det(P)} \begin{bmatrix} P_{yy} & -P_{xy} \\ -P_{xy} & P_{xx} \end{bmatrix}
+\]
+
+
+
+\[
+\Sigma = \frac{1}{4(ac - b^2)} \begin{bmatrix} 2c & -2b \\ -2b & 2a \end{bmatrix}
+\]
+
+
+
+\begin{align*}
+\sigma_{xx} &= \frac{2c}{4(ac - b^2)} = \mathbf{\frac{2c}{\text{det}}} \\[1ex]
+\sigma_{yy} &= \frac{2a}{4(ac - b^2)} = \mathbf{\frac{2a}{\text{det}}} \\[1ex]
+\sigma_{xy} &= \frac{-2b}{4(ac - b^2)} = \mathbf{\frac{-2b}{\text{det}}}
+\end{align*}
+
 
 
 
