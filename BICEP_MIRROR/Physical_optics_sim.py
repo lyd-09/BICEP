@@ -518,7 +518,8 @@ new_mirror_z = bilinear_interpolation(mirror_data_1)
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! computational save
 #most changed variables (N, theta_1, theta_2)
-cache_filename = f"fresnel_near_field_N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}.npy"
+sim_id = f"N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}"
+cache_filename = f"fresnel_near_field_{sim_id}.npy"
 
 if os.path.exists(cache_filename):
     print("File already found. Loading in Fresnel near-field grid")
@@ -610,7 +611,7 @@ far_field = np.abs(change_type_of_analysis)**2
 data_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Data"
 
 #add in flat vs non flat 33
-data_run_name = f"fresnel_near_field_N{N}N_mirror{N_mirror}_theta1{theta_1}_theta2{theta_2}{type_of_mirror_analysis}{date_time}.txt"
+data_run_name = f"fresnel_near_field_{sim_id}_{date_time}.txt"
 data_name = os.path.join(data_folder, data_run_name)
 
 
@@ -634,7 +635,7 @@ else:
 
 #printing system creating the folder name for tasks
 parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
-run_name = f"fresnel_near_field_N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}"
+run_name = f"fresnel_near_field_{sim_id}"
 folder_name = os.path.join(parent_folder, run_name)
 
 # os.makedirs(folder_name, exist_ok=True)
