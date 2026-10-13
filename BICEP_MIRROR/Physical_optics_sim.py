@@ -518,7 +518,7 @@ new_mirror_z = bilinear_interpolation(mirror_data_1)
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! computational save
 #most changed variables (N, theta_1, theta_2)
-sim_id = f"N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}"
+sim_id = f"N{N}N_mirror{type_of_mirror_analysis}_theta1{theta_1}_theta2{theta_2}_edge_taper{edge_taper}"
 cache_filename = f"fresnel_near_field_{sim_id}.npy"
 
 if os.path.exists(cache_filename):
