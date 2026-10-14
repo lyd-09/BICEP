@@ -1,0 +1,6 @@
+Peak amplitude (1/omega): 1.00000
+Center shift: (X: -0.0000, Y: -0.0000)
+True physical widths (Tilt-corrected): 
+r_x^2 = 2.80, r_y^2 = 2.8004
+Beam tilt angle: 45.00
+Precision parameters: xx = 0.1786, yy = 0.1786, xy = -0.0000

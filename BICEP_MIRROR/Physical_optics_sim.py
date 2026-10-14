@@ -638,7 +638,7 @@ parent_folder = r"C:\Users\lj350\Downloads\BICEP\BICEP_MIRROR\Graphs"
 run_name = f"fresnel_near_field_{sim_id}"
 folder_name = os.path.join(parent_folder, run_name)
 
-# os.makedirs(folder_name, exist_ok=True)
+os.makedirs(folder_name, exist_ok=True)
 
 print(f"Graphs saved to: {folder_name}")
 
